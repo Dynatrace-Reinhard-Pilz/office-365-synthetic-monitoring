@@ -53,3 +53,7 @@ You'll notice that your environment now contains 3 additional synthetic monitors
 
 ### You have arrived!
 ![Dashboard](https://github.com/Dynatrace-Reinhard-Pilz/office-365-synthetic-monitoring/raw/main/docs/dashboard.png)
+
+### Want to get more metrics?
+This solution targets a well selected subset of metrics that are available via MS Graph and Office Management API. There's certainly a lot more information hidden and ready to get pulled where these metrics come from. We've chosen this subset for the reasons that they can get queried for without inflicting any security concerns regarding the required permissions.
+You're welcome to either extend th PostMan Collection offered within this repository - or simply extend the configuration in your Dynatrace environment manually ... because in the end this solution just automates what you can configure either via REST API or WebUI.
