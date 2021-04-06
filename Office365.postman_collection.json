@@ -1,0 +1,3735 @@
+{
+	"info": {
+		"_postman_id": "08dbf138-9abb-44a1-ae41-3a2de11e8a8b",
+		"name": "Office365",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "[01]-[API Token]-[Credential Vault]",
+			"item": [
+				{
+					"name": "[API Token]-[Credential Vault]-[FIND]",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"setTimeout(function(){}, pm.variables.get(\"REQUEST_DELAY\"));\r",
+									"\r",
+									"pm.variables.unset(\"DELETE_TOKEN\");\r",
+									"\r",
+									"pm.test(\"200 OK\", () => {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"if(pm.response.code != 200) {\r",
+									"    postman.setNextRequest(null);\r",
+									"    return;\r",
+									"}\r",
+									"\r",
+									"if (pm.environment.get(\"MODE\") == \"CLEANUP\") {\r",
+									"    postman.setNextRequest(\"[API Token]-[Metrics Ingest]-[FIND]\");\r",
+									"} else {\r",
+									"    postman.setNextRequest(\"[API Token]-[Credential Vault]-[CREATE]\");\r",
+									"}\r",
+									"\r",
+									"var values = pm.response.json().values;\r",
+									"for (var i = 0; i < values.length; i++) {\r",
+									"    var value = values[i];    \r",
+									"    if (value.name == pm.collectionVariables.get(\"NAME_API_TOKEN_CREDENTIAL_VAULT_ACCESS\")) {\r",
+									"        pm.variables.set(\"DELETE_TOKEN\", value.id); \r",
+									"        postman.setNextRequest(\"[API Token]-[Credential Vault]-[DELETE]\");\r",
+									"        break;\r",
+									"    }\r",
+									"}\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json; charset=utf-8",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Api-Token {{API_TOKEN}}",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json; charset=utf-8",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{ENVIRONMENT_URL}}/api/v1/tokens/",
+							"host": [
+								"{{ENVIRONMENT_URL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"tokens",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "[API Token]-[Credential Vault]-[DELETE]",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"setTimeout(function(){}, pm.variables.get(\"REQUEST_DELAY\"));\r",
+									"\r",
+									"pm.variables.unset(\"DELETE_TOKEN\");\r",
+									"postman.setNextRequest(\"[API Token]-[Credential Vault]-[FIND]\");\r",
+									"\r",
+									"if (pm.response.code == 404) {\r",
+									"    return;\r",
+									"}\r",
+									"\r",
+									"pm.test(\"204 DELETED\", () => {\r",
+									"    pm.response.to.have.status(204);\r",
+									"});\r",
+									"\r",
+									"if(pm.response.code != 204) {\r",
+									"    postman.setNextRequest(null);\r",
+									"    return;\r",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json; charset=utf-8",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Api-Token {{API_TOKEN}}",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json; charset=utf-8",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{ENVIRONMENT_URL}}/api/v1/tokens/{{DELETE_TOKEN}}",
+							"host": [
+								"{{ENVIRONMENT_URL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"tokens",
+								"{{DELETE_TOKEN}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "[API Token]-[Credential Vault]-[CREATE]",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"setTimeout(function(){}, pm.variables.get(\"REQUEST_DELAY\"));\r",
+									"\r",
+									"pm.test(\"201 CREATED\", () => {\r",
+									"    pm.response.to.have.status(201);\r",
+									"});\r",
+									"\r",
+									"if(pm.response.code != 201) {\r",
+									"    postman.setNextRequest(null);\r",
+									"    return;\r",
+									"}\r",
+									"\r",
+									"pm.variables.set(\"API_TOKEN_CREDENTIAL_VAULT\", pm.response.json().token);\r",
+									"postman.setNextRequest(\"[API Token]-[Metrics Ingest]-[FIND]\");"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json; charset=utf-8",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Api-Token {{API_TOKEN}}",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json; charset=utf-8",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"name\": \"{{NAME_API_TOKEN_CREDENTIAL_VAULT_ACCESS}}\",\r\n  \"revoked\": false,\r\n  \"scopes\": [\r\n    \"credentialVault.write\",\r\n    \"credentialVault.read\"\r\n  ],\r\n  \"personalAccessToken\": false\r\n}"
+						},
+						"url": {
+							"raw": "{{ENVIRONMENT_URL}}/api/v1/tokens/",
+							"host": [
+								"{{ENVIRONMENT_URL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"tokens",
+								""
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "[02]-[API Token]-[Metrics Ingest]",
+			"item": [
+				{
+					"name": "[API Token]-[Metrics Ingest]-[FIND]",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"setTimeout(function(){}, pm.variables.get(\"REQUEST_DELAY\"));\r",
+									"\r",
+									"pm.variables.unset(\"DELETE_TOKEN\");\r",
+									"\r",
+									"pm.test(\"200 OK\", () => {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"if(pm.response.code != 200) {\r",
+									"    postman.setNextRequest(null);\r",
+									"    return;\r",
+									"}\r",
+									"\r",
+									"if (pm.environment.get(\"MODE\") == \"CLEANUP\") {\r",
+									"    postman.setNextRequest(\"[API Token]-[Monitor Creation]-[FIND]\");\r",
+									"} else {\r",
+									"    postman.setNextRequest(\"[API Token]-[Metrics Ingest]-[CREATE]\");\r",
+									"}\r",
+									"\r",
+									"var values = pm.response.json().values;\r",
+									"for (var i = 0; i < values.length; i++) {\r",
+									"    var value = values[i];    \r",
+									"    if (value.name == pm.collectionVariables.get(\"NAME_API_TOKEN_METRICS_INGEST\")) {\r",
+									"        pm.variables.set(\"DELETE_TOKEN\", value.id); \r",
+									"        postman.setNextRequest(\"[API Token]-[Metrics Ingest]-[DELETE]\");\r",
+									"        break;\r",
+									"    }\r",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json; charset=utf-8",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Api-Token {{API_TOKEN}}",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json; charset=utf-8",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{ENVIRONMENT_URL}}/api/v1/tokens/",
+							"host": [
+								"{{ENVIRONMENT_URL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"tokens",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "[API Token]-[Metrics Ingest]-[DELETE]",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"setTimeout(function(){}, pm.variables.get(\"REQUEST_DELAY\"));\r",
+									"\r",
+									"pm.variables.unset(\"DELETE_TOKEN\");\r",
+									"postman.setNextRequest(\"[API Token]-[Metrics Ingest]-[FIND]\");\r",
+									"\r",
+									"if (pm.response.code == 404) {\r",
+									"    return;\r",
+									"}\r",
+									"\r",
+									"pm.test(\"204 DELETED\", () => {\r",
+									"    pm.response.to.have.status(204);\r",
+									"});\r",
+									"\r",
+									"if(pm.response.code != 204) {\r",
+									"    postman.setNextRequest(null);\r",
+									"    return;\r",
+									"}\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json; charset=utf-8",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Api-Token {{API_TOKEN}}",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json; charset=utf-8",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{ENVIRONMENT_URL}}/api/v1/tokens/{{DELETE_TOKEN}}",
+							"host": [
+								"{{ENVIRONMENT_URL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"tokens",
+								"{{DELETE_TOKEN}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "[API Token]-[Metrics Ingest]-[CREATE]",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"setTimeout(function(){}, pm.variables.get(\"REQUEST_DELAY\"));\r",
+									"\r",
+									"pm.test(\"201 CREATED\", () => {\r",
+									"    pm.response.to.have.status(201);\r",
+									"});\r",
+									"\r",
+									"if(pm.response.code != 201) {\r",
+									"    postman.setNextRequest(null);\r",
+									"    return;\r",
+									"}\r",
+									"pm.variables.set(\"API_TOKEN_METRICS_INGEST\", pm.response.json().token);\r",
+									"\r",
+									"postman.setNextRequest(\"[API Token]-[Monitor Creation]-[FIND]\");\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json; charset=utf-8",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Api-Token {{API_TOKEN}}",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json; charset=utf-8",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"name\": \"{{NAME_API_TOKEN_METRICS_INGEST}}\",\r\n  \"revoked\": false,\r\n  \"scopes\": [\r\n    \"metrics.ingest\"\r\n  ],\r\n  \"personalAccessToken\": false\r\n}"
+						},
+						"url": {
+							"raw": "{{ENVIRONMENT_URL}}/api/v1/tokens",
+							"host": [
+								"{{ENVIRONMENT_URL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"tokens"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "[03]-[API Token]-[Monitor Creation]",
+			"item": [
+				{
+					"name": "[API Token]-[Monitor Creation]-[FIND]",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"setTimeout(function(){}, pm.variables.get(\"REQUEST_DELAY\"));\r",
+									"\r",
+									"pm.variables.unset(\"DELETE_TOKEN\");\r",
+									"\r",
+									"pm.test(\"200 OK\", () => {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"if(pm.response.code != 200) {\r",
+									"    postman.setNextRequest(null);\r",
+									"    return;\r",
+									"}\r",
+									"\r",
+									"if (pm.environment.get(\"MODE\") == \"CLEANUP\") {\r",
+									"    postman.setNextRequest(\"[Credentials]-[Metrics Ingest Token]-[FIND]\");\r",
+									"} else {\r",
+									"    postman.setNextRequest(\"[API Token]-[Monitor Creation]-[CREATE]\");\r",
+									"}\r",
+									"\r",
+									"var values = pm.response.json().values;\r",
+									"for (var i = 0; i < values.length; i++) {\r",
+									"    var value = values[i];    \r",
+									"    if (value.name == pm.collectionVariables.get(\"NAME_API_TOKEN_MONITOR_CREATION\")) {\r",
+									"        pm.variables.set(\"DELETE_TOKEN\", value.id); \r",
+									"        postman.setNextRequest(\"[API Token]-[Monitor Creation]-[DELETE]\");\r",
+									"        break;\r",
+									"    }\r",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json; charset=utf-8",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Api-Token {{API_TOKEN}}",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json; charset=utf-8",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{ENVIRONMENT_URL}}/api/v1/tokens/",
+							"host": [
+								"{{ENVIRONMENT_URL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"tokens",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "[API Token]-[Monitor Creation]-[DELETE]",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"setTimeout(function(){}, pm.variables.get(\"REQUEST_DELAY\"));\r",
+									"\r",
+									"pm.variables.unset(\"DELETE_TOKEN\");\r",
+									"postman.setNextRequest(\"[API Token]-[Monitor Creation]-[FIND]\");\r",
+									"\r",
+									"if (pm.response.code == 404) {\r",
+									"    return;\r",
+									"}\r",
+									"\r",
+									"pm.test(\"204 DELETED\", () => {\r",
+									"    pm.response.to.have.status(204);\r",
+									"});\r",
+									"\r",
+									"if(pm.response.code != 204) {\r",
+									"    postman.setNextRequest(null);\r",
+									"    return;\r",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json; charset=utf-8",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Api-Token {{API_TOKEN}}",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json; charset=utf-8",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{ENVIRONMENT_URL}}/api/v1/tokens/{{DELETE_TOKEN}}",
+							"host": [
+								"{{ENVIRONMENT_URL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"tokens",
+								"{{DELETE_TOKEN}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "[API Token]-[Monitor Creation]-[CREATE]",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"setTimeout(function(){}, pm.variables.get(\"REQUEST_DELAY\"));\r",
+									"\r",
+									"pm.test(\"201 CREATED\", () => {\r",
+									"    pm.response.to.have.status(201);\r",
+									"});\r",
+									"\r",
+									"if(pm.response.code != 201) {\r",
+									"    postman.setNextRequest(null);\r",
+									"    return;\r",
+									"}\r",
+									"var token = pm.response.json().token\r",
+									"pm.variables.set(\"API_TOKEN_MONITOR_SCHEDULING\", token);\r",
+									"pm.variables.set(\"ID_API_TOKEN_MONITOR_SCHEDULING\", token.substring(0, token.lastIndexOf(\".\")));\r",
+									"postman.setNextRequest(\"[Credentials]-[Metrics Ingest Token]-[FIND]\");"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json; charset=utf-8",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Api-Token {{API_TOKEN}}",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json; charset=utf-8",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"name\": \"{{NAME_API_TOKEN_MONITOR_CREATION}}\",\r\n  \"revoked\": false,\r\n  \"scopes\": [\r\n    \"ExternalSyntheticIntegration\",\r\n    \"ReadConfig\",\r\n    \"WriteConfig\"\r\n  ],\r\n  \"personalAccessToken\": false\r\n}"
+						},
+						"url": {
+							"raw": "{{ENVIRONMENT_URL}}/api/v1/tokens",
+							"host": [
+								"{{ENVIRONMENT_URL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"tokens"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "[04]-[Credentials]-[Metrics Ingest Token]",
+			"item": [
+				{
+					"name": "[Credentials]-[Metrics Ingest Token]-[FIND]",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"setTimeout(function(){}, pm.variables.get(\"REQUEST_DELAY\"));\r",
+									"\r",
+									"pm.variables.unset(\"DELETE_TOKEN\");\r",
+									"\r",
+									"pm.test(\"200 OK\", () => {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"if(pm.response.code != 200) {\r",
+									"    postman.setNextRequest(null);\r",
+									"    return;\r",
+									"}\r",
+									"\r",
+									"if (pm.environment.get(\"MODE\") == \"CLEANUP\") {\r",
+									"    postman.setNextRequest(\"[Credentials]-[Credential Vault Token]-[FIND]\");\r",
+									"} else {\r",
+									"    postman.setNextRequest(\"[Credentials]-[Metrics Ingest Token]-[CREATE]\");\r",
+									"}\r",
+									"\r",
+									"var values = pm.response.json().credentials;\r",
+									"for (var i = 0; i < values.length; i++) {\r",
+									"    var value = values[i];    \r",
+									"    if (value.name == pm.collectionVariables.get(\"NAME_CREDENTIALS_METRICS_INGEST_TOKEN\")) {\r",
+									"        pm.variables.set(\"DELETE_TOKEN\", value.id); \r",
+									"        postman.setNextRequest(\"[Credentials]-[Metrics Ingest Token]-[DELETE]\");\r",
+									"        break;\r",
+									"    }\r",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json; charset=utf-8",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Api-Token {{API_TOKEN_CREDENTIAL_VAULT}}",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json; charset=utf-8",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{ENVIRONMENT_URL}}/api/config/v1/credentials?type=TOKEN",
+							"host": [
+								"{{ENVIRONMENT_URL}}"
+							],
+							"path": [
+								"api",
+								"config",
+								"v1",
+								"credentials"
+							],
+							"query": [
+								{
+									"key": "type",
+									"value": "TOKEN"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "[Credentials]-[Metrics Ingest Token]-[DELETE]",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"setTimeout(function(){}, pm.variables.get(\"REQUEST_DELAY\"));\r",
+									"\r",
+									"pm.variables.unset(\"DELETE_TOKEN\");\r",
+									"postman.setNextRequest(\"[Credentials]-[Metrics Ingest Token]-[FIND]\");\r",
+									"\r",
+									"if (pm.response.code == 404) {\r",
+									"    return;\r",
+									"}\r",
+									"\r",
+									"pm.test(\"204 DELETED\", () => {\r",
+									"    pm.response.to.have.status(204);\r",
+									"});\r",
+									"\r",
+									"if(pm.response.code != 204) {\r",
+									"    postman.setNextRequest(null);\r",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json; charset=utf-8",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Api-Token {{API_TOKEN_CREDENTIAL_VAULT}}",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json; charset=utf-8",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{ENVIRONMENT_URL}}/api/config/v1/credentials/{{DELETE_TOKEN}}",
+							"host": [
+								"{{ENVIRONMENT_URL}}"
+							],
+							"path": [
+								"api",
+								"config",
+								"v1",
+								"credentials",
+								"{{DELETE_TOKEN}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "[Credentials]-[Metrics Ingest Token]-[CREATE]",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"setTimeout(function(){}, pm.variables.get(\"REQUEST_DELAY\"));\r",
+									"\r",
+									"pm.test(\"201 CREATED\", () => {\r",
+									"    pm.response.to.have.status(201);\r",
+									"});\r",
+									"\r",
+									"if(pm.response.code != 201) {\r",
+									"    postman.setNextRequest(null);\r",
+									"    return;\r",
+									"}\r",
+									"pm.variables.set(\"ID_CREDENTIALS_METRICS_INGEST\", pm.response.json().id);\r",
+									"postman.setNextRequest(\"[Credentials]-[Credential Vault Token]-[FIND]\");"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json; charset=utf-8",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Api-Token {{API_TOKEN_CREDENTIAL_VAULT}}",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json; charset=utf-8",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"name\": \"{{NAME_CREDENTIALS_METRICS_INGEST_TOKEN}}\",\r\n  \"type\": \"TOKEN\",\r\n  \"token\": \"{{API_TOKEN_METRICS_INGEST}}\",\r\n  \"ownerAccessOnly\": \"false\",\r\n  \"scope\": \"SYNTHETIC\"\r\n}"
+						},
+						"url": {
+							"raw": "{{ENVIRONMENT_URL}}/api/config/v1/credentials",
+							"host": [
+								"{{ENVIRONMENT_URL}}"
+							],
+							"path": [
+								"api",
+								"config",
+								"v1",
+								"credentials"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "[05]-[Credentials]-[Credential Vault Token]",
+			"item": [
+				{
+					"name": "[Credentials]-[Credential Vault Token]-[FIND]",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"setTimeout(function(){}, pm.variables.get(\"REQUEST_DELAY\"));\r",
+									"\r",
+									"pm.variables.unset(\"DELETE_TOKEN\");\r",
+									"\r",
+									"pm.test(\"200 OK\", () => {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"if(pm.response.code != 200) {\r",
+									"    postman.setNextRequest(null);\r",
+									"    return;\r",
+									"}\r",
+									"\r",
+									"if (pm.environment.get(\"MODE\") == \"CLEANUP\") {\r",
+									"    postman.setNextRequest(\"[Credentials]-[Office365 Access Token]-[FIND]\");\r",
+									"} else {\r",
+									"    postman.setNextRequest(\"[Credentials]-[Credential Vault Token]-[CREATE]\");\r",
+									"}\r",
+									"\r",
+									"var values = pm.response.json().credentials;\r",
+									"for (var i = 0; i < values.length; i++) {\r",
+									"    var value = values[i];    \r",
+									"    if (value.name == pm.collectionVariables.get(\"NAME_CREDENTIALS_CREDENTIAL_VAULT_TOKEN\")) {\r",
+									"        pm.variables.set(\"DELETE_TOKEN\", value.id); \r",
+									"        postman.setNextRequest(\"[Credentials]-[Credential Vault Token]-[DELETE]\");\r",
+									"        break;\r",
+									"    }\r",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json; charset=utf-8",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Api-Token {{API_TOKEN_CREDENTIAL_VAULT}}",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json; charset=utf-8",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{ENVIRONMENT_URL}}/api/config/v1/credentials?type=TOKEN",
+							"host": [
+								"{{ENVIRONMENT_URL}}"
+							],
+							"path": [
+								"api",
+								"config",
+								"v1",
+								"credentials"
+							],
+							"query": [
+								{
+									"key": "type",
+									"value": "TOKEN"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "[Credentials]-[Credential Vault Token]-[DELETE]",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"setTimeout(function(){}, pm.variables.get(\"REQUEST_DELAY\"));\r",
+									"\r",
+									"pm.variables.unset(\"DELETE_TOKEN\");\r",
+									"postman.setNextRequest(\"[Credentials]-[Credential Vault Token]-[FIND]\");\r",
+									"\r",
+									"if (pm.response.code == 404) {\r",
+									"    return;\r",
+									"}\r",
+									"\r",
+									"pm.test(\"204 DELETED\", () => {\r",
+									"    pm.response.to.have.status(204);\r",
+									"});\r",
+									"\r",
+									"if(pm.response.code != 204) {\r",
+									"    postman.setNextRequest(null);\r",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json; charset=utf-8",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Api-Token {{API_TOKEN_CREDENTIAL_VAULT}}",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json; charset=utf-8",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{ENVIRONMENT_URL}}/api/config/v1/credentials/{{DELETE_TOKEN}}",
+							"host": [
+								"{{ENVIRONMENT_URL}}"
+							],
+							"path": [
+								"api",
+								"config",
+								"v1",
+								"credentials",
+								"{{DELETE_TOKEN}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "[Credentials]-[Credential Vault Token]-[CREATE]",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"setTimeout(function(){}, pm.variables.get(\"REQUEST_DELAY\"));\r",
+									"\r",
+									"pm.test(\"201 CREATED\", () => {\r",
+									"    pm.response.to.have.status(201);\r",
+									"});\r",
+									"\r",
+									"if(pm.response.code != 201) {\r",
+									"    postman.setNextRequest(null);\r",
+									"    return;\r",
+									"}\r",
+									"pm.variables.set(\"ID_CREDENTIALS_ACCESS_CREDENTIAL_VAULT\", pm.response.json().id);\r",
+									"postman.setNextRequest(\"[Credentials]-[Office365 Access Token]-[FIND]\");"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json; charset=utf-8",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Api-Token {{API_TOKEN_CREDENTIAL_VAULT}}",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json; charset=utf-8",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"name\": \"{{NAME_CREDENTIALS_CREDENTIAL_VAULT_TOKEN}}\",\r\n  \"type\": \"TOKEN\",\r\n  \"token\": \"{{API_TOKEN_CREDENTIAL_VAULT}}\",\r\n  \"ownerAccessOnly\": \"false\",\r\n  \"scope\": \"SYNTHETIC\"\r\n}"
+						},
+						"url": {
+							"raw": "{{ENVIRONMENT_URL}}/api/config/v1/credentials",
+							"host": [
+								"{{ENVIRONMENT_URL}}"
+							],
+							"path": [
+								"api",
+								"config",
+								"v1",
+								"credentials"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "[06]-[Credentials]-[Office365 Access Token]",
+			"item": [
+				{
+					"name": "[Credentials]-[Office365 Access Token]-[FIND]",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"setTimeout(function(){}, pm.variables.get(\"REQUEST_DELAY\"));\r",
+									"\r",
+									"pm.variables.unset(\"DELETE_TOKEN\");\r",
+									"\r",
+									"pm.test(\"200 OK\", () => {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"if(pm.response.code != 200) {\r",
+									"    postman.setNextRequest(null);\r",
+									"    return;\r",
+									"}\r",
+									"\r",
+									"if (pm.environment.get(\"MODE\") == \"CLEANUP\") {\r",
+									"    postman.setNextRequest(\"[Credentials]-[Office365 Manage Access Token]-[FIND]\");\r",
+									"} else {\r",
+									"    postman.setNextRequest(\"[Office365]-[Access Token]-[CREATE]\");\r",
+									"}\r",
+									"\r",
+									"var values = pm.response.json().credentials;\r",
+									"for (var i = 0; i < values.length; i++) {\r",
+									"    var value = values[i];    \r",
+									"    if (value.name == pm.collectionVariables.get(\"NAME_CREDENTIALS_OFFICE365_ACCESS_TOKEN\")) {\r",
+									"        pm.variables.set(\"DELETE_TOKEN\", value.id); \r",
+									"        postman.setNextRequest(\"[Credentials]-[Office365 Access Token]-[DELETE]\");\r",
+									"        break;\r",
+									"    }\r",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json; charset=utf-8",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Api-Token {{API_TOKEN_CREDENTIAL_VAULT}}",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json; charset=utf-8",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{ENVIRONMENT_URL}}/api/config/v1/credentials?type=TOKEN",
+							"host": [
+								"{{ENVIRONMENT_URL}}"
+							],
+							"path": [
+								"api",
+								"config",
+								"v1",
+								"credentials"
+							],
+							"query": [
+								{
+									"key": "type",
+									"value": "TOKEN"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "[Credentials]-[Office365 Access Token]-[DELETE]",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"setTimeout(function(){}, pm.variables.get(\"REQUEST_DELAY\"));\r",
+									"\r",
+									"pm.variables.unset(\"DELETE_TOKEN\");\r",
+									"postman.setNextRequest(\"[Credentials]-[Office365 Access Token]-[FIND]\");\r",
+									"\r",
+									"if (pm.response.code == 404) {\r",
+									"    return;\r",
+									"}\r",
+									"\r",
+									"pm.test(\"204 DELETED\", () => {\r",
+									"    pm.response.to.have.status(204);\r",
+									"});\r",
+									"\r",
+									"if(pm.response.code != 204) {\r",
+									"    postman.setNextRequest(null);\r",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json; charset=utf-8",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Api-Token {{API_TOKEN_CREDENTIAL_VAULT}}",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json; charset=utf-8",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{ENVIRONMENT_URL}}/api/config/v1/credentials/{{DELETE_TOKEN}}",
+							"host": [
+								"{{ENVIRONMENT_URL}}"
+							],
+							"path": [
+								"api",
+								"config",
+								"v1",
+								"credentials",
+								"{{DELETE_TOKEN}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "[Office365]-[Access Token]-[CREATE]",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"setTimeout(function(){}, pm.variables.get(\"REQUEST_DELAY\"));\r",
+									"\r",
+									"pm.test(\"200 OK\", () => {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"if(pm.response.code != 200) {\r",
+									"    postman.setNextRequest(null);\r",
+									"    return;\r",
+									"}\r",
+									"pm.variables.set(\"OFFICE365_ACCESS_TOKEN\", pm.response.json().access_token);\r",
+									"postman.setNextRequest(\"[Credentials]-[Office365 Access Token]-[CREATE]\");"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Host",
+								"value": "login.microsoftonline.com",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "client_id",
+									"value": "{{AZURE_CLIENT_ID}}",
+									"type": "text"
+								},
+								{
+									"key": "scope",
+									"value": "https://graph.microsoft.com/.default",
+									"type": "text"
+								},
+								{
+									"key": "client_secret",
+									"value": "{{OFFICE365_CLIENT_SECRET}}",
+									"type": "text"
+								},
+								{
+									"key": "grant_type",
+									"value": "client_credentials",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "https://login.microsoftonline.com/{{AZURE_TENANT}}/oauth2/v2.0/token",
+							"protocol": "https",
+							"host": [
+								"login",
+								"microsoftonline",
+								"com"
+							],
+							"path": [
+								"{{AZURE_TENANT}}",
+								"oauth2",
+								"v2.0",
+								"token"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "[Credentials]-[Office365 Access Token]-[CREATE]",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"setTimeout(function(){}, pm.variables.get(\"REQUEST_DELAY\"));\r",
+									"\r",
+									"pm.test(\"201 CREATED\", () => {\r",
+									"    pm.response.to.have.status(201);\r",
+									"});\r",
+									"\r",
+									"if(pm.response.code != 201) {\r",
+									"    postman.setNextRequest(null);\r",
+									"    return;\r",
+									"}\r",
+									"pm.variables.set(\"ID_CREDENTIALS_OFFICE365_ACCESS_TOKEN\", pm.response.json().id);\r",
+									"postman.setNextRequest(\"[Credentials]-[Office365 Manage Access Token]-[FIND]\");"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json; charset=utf-8",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Api-Token {{API_TOKEN_CREDENTIAL_VAULT}}",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json; charset=utf-8",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"name\": \"{{NAME_CREDENTIALS_OFFICE365_ACCESS_TOKEN}}\",\r\n  \"type\": \"TOKEN\",\r\n  \"token\": \"{{OFFICE365_ACCESS_TOKEN}}\",\r\n  \"ownerAccessOnly\": \"false\",\r\n  \"scope\": \"SYNTHETIC\"\r\n}"
+						},
+						"url": {
+							"raw": "{{ENVIRONMENT_URL}}/api/config/v1/credentials",
+							"host": [
+								"{{ENVIRONMENT_URL}}"
+							],
+							"path": [
+								"api",
+								"config",
+								"v1",
+								"credentials"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "[07]-[Credentials]-[Office365 Manage Access Token]",
+			"item": [
+				{
+					"name": "[Credentials]-[Office365 Manage Access Token]-[FIND]",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"setTimeout(function(){}, pm.variables.get(\"REQUEST_DELAY\"));\r",
+									"\r",
+									"pm.variables.unset(\"DELETE_TOKEN\");\r",
+									"\r",
+									"pm.test(\"200 OK\", () => {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"if(pm.response.code != 200) {\r",
+									"    postman.setNextRequest(null);\r",
+									"    return;\r",
+									"}\r",
+									"\r",
+									"if (pm.environment.get(\"MODE\") == \"CLEANUP\") {\r",
+									"    postman.setNextRequest(\"[Credentials]-[Office365 Client Secret]-[FIND]\");\r",
+									"} else {\r",
+									"    postman.setNextRequest(\"[Office365]-[Manage Access Token]-[CREATE]\");\r",
+									"}\r",
+									"\r",
+									"var values = pm.response.json().credentials;\r",
+									"for (var i = 0; i < values.length; i++) {\r",
+									"    var value = values[i];    \r",
+									"    if (value.name == pm.collectionVariables.get(\"NAME_CREDENTIALS_OFFICE365_MANAGE_ACCESS_TOKEN\")) {\r",
+									"        pm.variables.set(\"DELETE_TOKEN\", value.id); \r",
+									"        postman.setNextRequest(\"[Credentials]-[Office365 Manage Access Token]-[DELETE]\");\r",
+									"        break;\r",
+									"    }\r",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json; charset=utf-8",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Api-Token {{API_TOKEN_CREDENTIAL_VAULT}}",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json; charset=utf-8",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{ENVIRONMENT_URL}}/api/config/v1/credentials?type=TOKEN",
+							"host": [
+								"{{ENVIRONMENT_URL}}"
+							],
+							"path": [
+								"api",
+								"config",
+								"v1",
+								"credentials"
+							],
+							"query": [
+								{
+									"key": "type",
+									"value": "TOKEN"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "[Credentials]-[Office365 Manage Access Token]-[DELETE]",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"setTimeout(function(){}, pm.variables.get(\"REQUEST_DELAY\"));\r",
+									"\r",
+									"pm.variables.unset(\"DELETE_TOKEN\");\r",
+									"postman.setNextRequest(\"[Credentials]-[Office365 Manage Access Token]-[FIND]\");\r",
+									"\r",
+									"if (pm.response.code == 404) {\r",
+									"    return;\r",
+									"}\r",
+									"\r",
+									"pm.test(\"204 DELETED\", () => {\r",
+									"    pm.response.to.have.status(204);\r",
+									"});\r",
+									"\r",
+									"if(pm.response.code != 204) {\r",
+									"    postman.setNextRequest(null);\r",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json; charset=utf-8",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Api-Token {{API_TOKEN_CREDENTIAL_VAULT}}",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json; charset=utf-8",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{ENVIRONMENT_URL}}/api/config/v1/credentials/{{DELETE_TOKEN}}",
+							"host": [
+								"{{ENVIRONMENT_URL}}"
+							],
+							"path": [
+								"api",
+								"config",
+								"v1",
+								"credentials",
+								"{{DELETE_TOKEN}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "[Office365]-[Manage Access Token]-[CREATE]",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"setTimeout(function(){}, pm.variables.get(\"REQUEST_DELAY\"));\r",
+									"\r",
+									"pm.test(\"200 OK\", () => {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"if(pm.response.code != 200) {\r",
+									"    postman.setNextRequest(null);\r",
+									"    return;\r",
+									"}\r",
+									"pm.variables.set(\"OFFICE365_MANAGE_ACCESS_TOKEN\", pm.response.json().access_token);\r",
+									"postman.setNextRequest(\"[Credentials]-[Office365 Manage Access Token]-[CREATE]\");"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Host",
+								"value": "login.microsoftonline.com",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "client_id",
+									"value": "{{AZURE_CLIENT_ID}}",
+									"type": "text"
+								},
+								{
+									"key": "scope",
+									"value": "https://manage.office.com/.default",
+									"type": "text"
+								},
+								{
+									"key": "client_secret",
+									"value": "{{OFFICE365_CLIENT_SECRET}}",
+									"type": "text"
+								},
+								{
+									"key": "grant_type",
+									"value": "client_credentials",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "https://login.microsoftonline.com/{{AZURE_TENANT}}/oauth2/v2.0/token",
+							"protocol": "https",
+							"host": [
+								"login",
+								"microsoftonline",
+								"com"
+							],
+							"path": [
+								"{{AZURE_TENANT}}",
+								"oauth2",
+								"v2.0",
+								"token"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "[Credentials]-[Office365 Manage Access Token]-[CREATE]",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"setTimeout(function(){}, pm.variables.get(\"REQUEST_DELAY\"));\r",
+									"\r",
+									"pm.test(\"201 CREATED\", () => {\r",
+									"    pm.response.to.have.status(201);\r",
+									"});\r",
+									"\r",
+									"if(pm.response.code != 201) {\r",
+									"    postman.setNextRequest(null);\r",
+									"    return;\r",
+									"}\r",
+									"pm.variables.set(\"ID_CREDENTIALS_OFFICE365_MANAGE_ACCESS_TOKEN\", pm.response.json().id);\r",
+									"postman.setNextRequest(\"[Credentials]-[Office365 Client Secret]-[FIND]\");"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json; charset=utf-8",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Api-Token {{API_TOKEN_CREDENTIAL_VAULT}}",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json; charset=utf-8",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"name\": \"{{NAME_CREDENTIALS_OFFICE365_MANAGE_ACCESS_TOKEN}}\",\r\n  \"type\": \"TOKEN\",\r\n  \"token\": \"{{OFFICE365_MANAGE_ACCESS_TOKEN}}\",\r\n  \"ownerAccessOnly\": \"false\",\r\n  \"scope\": \"SYNTHETIC\"\r\n}"
+						},
+						"url": {
+							"raw": "{{ENVIRONMENT_URL}}/api/config/v1/credentials",
+							"host": [
+								"{{ENVIRONMENT_URL}}"
+							],
+							"path": [
+								"api",
+								"config",
+								"v1",
+								"credentials"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "[08]-[Credentials]-[Office365 Client Secret]",
+			"item": [
+				{
+					"name": "[Credentials]-[Office365 Client Secret]-[FIND]",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"setTimeout(function(){}, pm.variables.get(\"REQUEST_DELAY\"));\r",
+									"\r",
+									"pm.variables.unset(\"DELETE_TOKEN\");\r",
+									"\r",
+									"pm.test(\"200 OK\", () => {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"if(pm.response.code != 200) {\r",
+									"    postman.setNextRequest(null);\r",
+									"    return;\r",
+									"}\r",
+									"\r",
+									"if (pm.environment.get(\"MODE\") == \"CLEANUP\") {\r",
+									"    postman.setNextRequest(\"[Credentials]-[Office365 ClientID]-[FIND]\");\r",
+									"} else {\r",
+									"    postman.setNextRequest(\"[Credentials]-[Office365 Client Secret]-[CREATE]\");\r",
+									"}\r",
+									"\r",
+									"var values = pm.response.json().credentials;\r",
+									"for (var i = 0; i < values.length; i++) {\r",
+									"    var value = values[i];    \r",
+									"    if (value.name == pm.collectionVariables.get(\"NAME_CREDENTIALS_OFFICE365_CLIENT_SECRET\")) {\r",
+									"        pm.variables.set(\"DELETE_TOKEN\", value.id); \r",
+									"        postman.setNextRequest(\"[Credentials]-[Office365 Client Secret]-[DELETE]\");\r",
+									"        break;\r",
+									"    }\r",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json; charset=utf-8",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Api-Token {{API_TOKEN_CREDENTIAL_VAULT}}",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json; charset=utf-8",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{ENVIRONMENT_URL}}/api/config/v1/credentials?type=TOKEN",
+							"host": [
+								"{{ENVIRONMENT_URL}}"
+							],
+							"path": [
+								"api",
+								"config",
+								"v1",
+								"credentials"
+							],
+							"query": [
+								{
+									"key": "type",
+									"value": "TOKEN"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "[Credentials]-[Office365 Client Secret]-[DELETE]",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"setTimeout(function(){}, pm.variables.get(\"REQUEST_DELAY\"));\r",
+									"\r",
+									"pm.variables.unset(\"DELETE_TOKEN\");\r",
+									"postman.setNextRequest(\"[Credentials]-[Office365 Client Secret]-[FIND]\");\r",
+									"\r",
+									"if (pm.response.code == 404) {\r",
+									"    return;\r",
+									"}\r",
+									"\r",
+									"pm.test(\"204 DELETED\", () => {\r",
+									"    pm.response.to.have.status(204);\r",
+									"});\r",
+									"\r",
+									"if(pm.response.code != 204) {\r",
+									"    postman.setNextRequest(null);\r",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json; charset=utf-8",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Api-Token {{API_TOKEN_CREDENTIAL_VAULT}}",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json; charset=utf-8",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{ENVIRONMENT_URL}}/api/config/v1/credentials/{{DELETE_TOKEN}}",
+							"host": [
+								"{{ENVIRONMENT_URL}}"
+							],
+							"path": [
+								"api",
+								"config",
+								"v1",
+								"credentials",
+								"{{DELETE_TOKEN}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "[Credentials]-[Office365 Client Secret]-[CREATE]",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"setTimeout(function(){}, pm.variables.get(\"REQUEST_DELAY\"));\r",
+									"\r",
+									"pm.test(\"201 CREATED\", () => {\r",
+									"    pm.response.to.have.status(201);\r",
+									"});\r",
+									"\r",
+									"if(pm.response.code != 201) {\r",
+									"    postman.setNextRequest(null);\r",
+									"    return;\r",
+									"}\r",
+									"pm.variables.set(\"ID_CREDENTIALS_OFFICE365_CLIENT_SECRET\", pm.response.json().id);\r",
+									"postman.setNextRequest(\"[Credentials]-[Office365 ClientID]-[FIND]\");"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json; charset=utf-8",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Api-Token {{API_TOKEN_CREDENTIAL_VAULT}}",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json; charset=utf-8",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"name\": \"{{NAME_CREDENTIALS_OFFICE365_CLIENT_SECRET}}\",\r\n  \"type\": \"TOKEN\",\r\n  \"token\": \"{{OFFICE365_CLIENT_SECRET}}\",\r\n  \"ownerAccessOnly\": \"false\",\r\n  \"scope\": \"SYNTHETIC\"\r\n}"
+						},
+						"url": {
+							"raw": "{{ENVIRONMENT_URL}}/api/config/v1/credentials",
+							"host": [
+								"{{ENVIRONMENT_URL}}"
+							],
+							"path": [
+								"api",
+								"config",
+								"v1",
+								"credentials"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "[09]-[Credentials]-[Office365 ClientID]",
+			"item": [
+				{
+					"name": "[Credentials]-[Office365 ClientID]-[FIND]",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"setTimeout(function(){}, pm.variables.get(\"REQUEST_DELAY\"));\r",
+									"\r",
+									"pm.variables.unset(\"DELETE_TOKEN\");\r",
+									"\r",
+									"pm.test(\"200 OK\", () => {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"if(pm.response.code != 200) {\r",
+									"    postman.setNextRequest(null);\r",
+									"    return;\r",
+									"}\r",
+									"\r",
+									"if (pm.environment.get(\"MODE\") == \"CLEANUP\") {\r",
+									"    postman.setNextRequest(\"[Credentials]-[Office365 Tenant]-[FIND]\");\r",
+									"} else {\r",
+									"    postman.setNextRequest(\"[Credentials]-[Office365 ClientID]-[CREATE]\");\r",
+									"}\r",
+									"\r",
+									"var values = pm.response.json().credentials;\r",
+									"for (var i = 0; i < values.length; i++) {\r",
+									"    var value = values[i];    \r",
+									"    if (value.name == pm.collectionVariables.get(\"NAME_CREDENTIALS_OFFICE365_CLIENT_ID\")) {\r",
+									"        pm.variables.set(\"DELETE_TOKEN\", value.id); \r",
+									"        postman.setNextRequest(\"[Credentials]-[Office365 ClientID]-[DELETE]\");\r",
+									"        break;\r",
+									"    }\r",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json; charset=utf-8",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Api-Token {{API_TOKEN_CREDENTIAL_VAULT}}",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json; charset=utf-8",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{ENVIRONMENT_URL}}/api/config/v1/credentials?type=TOKEN",
+							"host": [
+								"{{ENVIRONMENT_URL}}"
+							],
+							"path": [
+								"api",
+								"config",
+								"v1",
+								"credentials"
+							],
+							"query": [
+								{
+									"key": "type",
+									"value": "TOKEN"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "[Credentials]-[Office365 ClientID]-[DELETE]",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"setTimeout(function(){}, pm.variables.get(\"REQUEST_DELAY\"));\r",
+									"\r",
+									"pm.variables.unset(\"DELETE_TOKEN\");\r",
+									"postman.setNextRequest(\"[Credentials]-[Office365 ClientID]-[FIND]\");\r",
+									"\r",
+									"if (pm.response.code == 404) {\r",
+									"    return;\r",
+									"}\r",
+									"\r",
+									"pm.test(\"204 DELETED\", () => {\r",
+									"    pm.response.to.have.status(204);\r",
+									"});\r",
+									"\r",
+									"if(pm.response.code != 204) {\r",
+									"    postman.setNextRequest(null);\r",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json; charset=utf-8",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Api-Token {{API_TOKEN_CREDENTIAL_VAULT}}",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json; charset=utf-8",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{ENVIRONMENT_URL}}/api/config/v1/credentials/{{DELETE_TOKEN}}",
+							"host": [
+								"{{ENVIRONMENT_URL}}"
+							],
+							"path": [
+								"api",
+								"config",
+								"v1",
+								"credentials",
+								"{{DELETE_TOKEN}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "[Credentials]-[Office365 ClientID]-[CREATE]",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"setTimeout(function(){}, pm.variables.get(\"REQUEST_DELAY\"));\r",
+									"\r",
+									"pm.test(\"201 CREATED\", () => {\r",
+									"    pm.response.to.have.status(201);\r",
+									"});\r",
+									"\r",
+									"if(pm.response.code != 201) {\r",
+									"    postman.setNextRequest(null);\r",
+									"    return;\r",
+									"}\r",
+									"pm.variables.set(\"ID_CREDENTIALS_OFFICE365_CLIENT_ID\", pm.response.json().id);\r",
+									"postman.setNextRequest(\"[Credentials]-[Office365 Tenant]-[FIND]\");"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json; charset=utf-8",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Api-Token {{API_TOKEN_CREDENTIAL_VAULT}}",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json; charset=utf-8",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"name\": \"{{NAME_CREDENTIALS_OFFICE365_CLIENT_ID}}\",\r\n  \"type\": \"TOKEN\",\r\n  \"token\": \"{{AZURE_CLIENT_ID}}\",\r\n  \"ownerAccessOnly\": \"false\",\r\n  \"scope\": \"SYNTHETIC\"\r\n}"
+						},
+						"url": {
+							"raw": "{{ENVIRONMENT_URL}}/api/config/v1/credentials",
+							"host": [
+								"{{ENVIRONMENT_URL}}"
+							],
+							"path": [
+								"api",
+								"config",
+								"v1",
+								"credentials"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "[10]-[Credentials]-[Office365 Tenant]",
+			"item": [
+				{
+					"name": "[Credentials]-[Office365 Tenant]-[FIND]",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"setTimeout(function(){}, pm.variables.get(\"REQUEST_DELAY\"));\r",
+									"\r",
+									"pm.variables.unset(\"DELETE_TOKEN\");\r",
+									"\r",
+									"pm.test(\"200 OK\", () => {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"if(pm.response.code != 200) {\r",
+									"    postman.setNextRequest(null);\r",
+									"    return;\r",
+									"}\r",
+									"\r",
+									"if (pm.environment.get(\"MODE\") == \"CLEANUP\") {\r",
+									"    postman.setNextRequest(\"[GeoLocations]-[FIND]\");\r",
+									"} else {\r",
+									"    postman.setNextRequest(\"[Credentials]-[Office365 Tenant]-[CREATE]\");\r",
+									"}\r",
+									"\r",
+									"var values = pm.response.json().credentials;\r",
+									"for (var i = 0; i < values.length; i++) {\r",
+									"    var value = values[i];    \r",
+									"    if (value.name == pm.collectionVariables.get(\"NAME_CREDENTIALS_OFFICE365_TENANT\")) {\r",
+									"        pm.variables.set(\"DELETE_TOKEN\", value.id); \r",
+									"        postman.setNextRequest(\"[Credentials]-[Office365 Tenant]-[DELETE]\");\r",
+									"        break;\r",
+									"    }\r",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json; charset=utf-8",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Api-Token {{API_TOKEN_CREDENTIAL_VAULT}}",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json; charset=utf-8",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{ENVIRONMENT_URL}}/api/config/v1/credentials?type=TOKEN",
+							"host": [
+								"{{ENVIRONMENT_URL}}"
+							],
+							"path": [
+								"api",
+								"config",
+								"v1",
+								"credentials"
+							],
+							"query": [
+								{
+									"key": "type",
+									"value": "TOKEN"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "[Credentials]-[Office365 Tenant]-[DELETE]",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"setTimeout(function(){}, pm.variables.get(\"REQUEST_DELAY\"));\r",
+									"\r",
+									"pm.variables.unset(\"DELETE_TOKEN\");\r",
+									"postman.setNextRequest(\"[Credentials]-[Office365 Tenant]-[FIND]\");\r",
+									"\r",
+									"if (pm.response.code == 404) {\r",
+									"    return;\r",
+									"}\r",
+									"\r",
+									"pm.test(\"204 DELETED\", () => {\r",
+									"    pm.response.to.have.status(204);\r",
+									"});\r",
+									"\r",
+									"if(pm.response.code != 204) {\r",
+									"    postman.setNextRequest(null);\r",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json; charset=utf-8",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Api-Token {{API_TOKEN_CREDENTIAL_VAULT}}",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json; charset=utf-8",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{ENVIRONMENT_URL}}/api/config/v1/credentials/{{DELETE_TOKEN}}",
+							"host": [
+								"{{ENVIRONMENT_URL}}"
+							],
+							"path": [
+								"api",
+								"config",
+								"v1",
+								"credentials",
+								"{{DELETE_TOKEN}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "[Credentials]-[Office365 Tenant]-[CREATE]",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"setTimeout(function(){}, pm.variables.get(\"REQUEST_DELAY\"));\r",
+									"\r",
+									"pm.test(\"201 CREATED\", () => {\r",
+									"    pm.response.to.have.status(201);\r",
+									"});\r",
+									"\r",
+									"if(pm.response.code != 201) {\r",
+									"    postman.setNextRequest(null);\r",
+									"    return;\r",
+									"}\r",
+									"pm.variables.set(\"ID_CREDENTIALS_OFFICE365_AZURE_TENANT\", pm.response.json().id);\r",
+									"postman.setNextRequest(\"[GeoLocations]-[FIND]\");"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json; charset=utf-8",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Api-Token {{API_TOKEN_CREDENTIAL_VAULT}}",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json; charset=utf-8",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"name\": \"{{NAME_CREDENTIALS_OFFICE365_TENANT}}\",\r\n  \"type\": \"TOKEN\",\r\n  \"token\": \"{{AZURE_TENANT}}\",\r\n  \"ownerAccessOnly\": \"false\",\r\n  \"scope\": \"SYNTHETIC\"\r\n}"
+						},
+						"url": {
+							"raw": "{{ENVIRONMENT_URL}}/api/config/v1/credentials",
+							"host": [
+								"{{ENVIRONMENT_URL}}"
+							],
+							"path": [
+								"api",
+								"config",
+								"v1",
+								"credentials"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "[11]-[GeoLocations]",
+			"item": [
+				{
+					"name": "[GeoLocations]-[FIND]",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"setTimeout(function(){}, pm.variables.get(\"REQUEST_DELAY\"));\r",
+									"\r",
+									"pm.test(\"200 OK\", () => {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"if(pm.response.code != 200) {\r",
+									"    postman.setNextRequest(null);\r",
+									"    return;\r",
+									"}\r",
+									"\r",
+									"postman.setNextRequest(\"[Monitor]-[Office365 Token Refresh]-[FIND]\");\r",
+									"\r",
+									"var locations = pm.response.json().locations;\r",
+									"\r",
+									"// These are fallback values - on dev tenants there's a limited amount of synthetic locations\r",
+									"pm.variables.set(\"GEO_LOCATION_DUBLIN_ID\", locations[0].entityId);\r",
+									"pm.variables.set(\"GEO_LOCATION_LONDON_ID\", locations[0].entityId);\r",
+									"pm.variables.set(\"GEO_LOCATION_CAPE_TOWN_ID\", locations[0].entityId);\r",
+									"pm.variables.set(\"GEO_LOCATION_TOKYO_ID\", locations[0].entityId);\r",
+									"pm.variables.set(\"GEO_LOCATION_NVIRGINIA_ID\", locations[0].entityId);\r",
+									"pm.variables.set(\"GEO_LOCATION_SAO_PAULO_ID\", locations[0].entityId);\r",
+									"pm.variables.set(\"GEO_LOCATION_SYDNEY_ID\", locations[0].entityId);\r",
+									"\r",
+									"\r",
+									"for (var i = 0; i < locations.length; i++) {\r",
+									"    var location = locations[i];    \r",
+									"    if (location.name == \"Dublin\") {\r",
+									"      pm.variables.set(\"GEO_LOCATION_DUBLIN_ID\", location.entityId);  \r",
+									"    } else if (location.name == \"London\") {\r",
+									"      pm.variables.set(\"GEO_LOCATION_LONDON_ID\", location.entityId);  \r",
+									"    } else if (location.name == \"Cape Town\") {\r",
+									"      pm.variables.set(\"GEO_LOCATION_CAPE_TOWN_ID\", location.entityId);  \r",
+									"    } else if (location.name == \"Tokyo\") {\r",
+									"      pm.variables.set(\"GEO_LOCATION_TOKYO_ID\", location.entityId);  \r",
+									"    } else if (location.name == \"N. Virginia\") {\r",
+									"      pm.variables.set(\"GEO_LOCATION_NVIRGINIA_ID\", location.entityId);  \r",
+									"    } else if (location.name == \"São Paulo\") {\r",
+									"      pm.variables.set(\"GEO_LOCATION_SAO_PAULO_ID\", location.entityId);  \r",
+									"    } else if (location.name == \"Sydney\") {\r",
+									"      pm.variables.set(\"GEO_LOCATION_SYDNEY_ID\", location.entityId);  \r",
+									"    }\r",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json; charset=utf-8",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Api-Token {{API_TOKEN_MONITOR_SCHEDULING}}",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json; charset=utf-8",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{ENVIRONMENT_URL}}/api/v1/synthetic/locations?cloudPlatform=AWS&type=PUBLIC",
+							"host": [
+								"{{ENVIRONMENT_URL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"synthetic",
+								"locations"
+							],
+							"query": [
+								{
+									"key": "cloudPlatform",
+									"value": "AWS"
+								},
+								{
+									"key": "type",
+									"value": "PUBLIC"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "[12]-[Monitor]-[Office365 Token Refresh]",
+			"item": [
+				{
+					"name": "[Monitor]-[Office365 Token Refresh]-[FIND]",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"setTimeout(function(){}, pm.variables.get(\"REQUEST_DELAY\"));\r",
+									"\r",
+									"pm.variables.unset(\"DELETE_TOKEN\");\r",
+									"\r",
+									"pm.test(\"200 OK\", () => {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"if(pm.response.code != 200) {\r",
+									"    postman.setNextRequest(null);\r",
+									"    return;\r",
+									"}\r",
+									"\r",
+									"if (pm.environment.get(\"MODE\") == \"CLEANUP\") {\r",
+									"    postman.setNextRequest(\"[Monitor]-[Office365 portal.office.com]-[FIND]\");\r",
+									"} else {\r",
+									"    postman.setNextRequest(\"[Monitor]-[Office365 Token Refresh]-[CREATE]\");\r",
+									"}\r",
+									"\r",
+									"var values = pm.response.json().monitors;\r",
+									"for (var i = 0; i < values.length; i++) {\r",
+									"    var value = values[i];\r",
+									"    var name = value.name.trim();\r",
+									"    var expectedName = pm.collectionVariables.get(\"NAME_MONITOR_TOKEN_REFRESH\").trim();\r",
+									"    if (name == expectedName) {\r",
+									"        pm.variables.set(\"DELETE_TOKEN\", value.entityId); \r",
+									"        postman.setNextRequest(\"[Monitor]-[Office365 Token Refresh]-[DELETE]\");\r",
+									"        break;\r",
+									"    }\r",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json; charset=utf-8",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Api-Token {{API_TOKEN_MONITOR_SCHEDULING}}",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json; charset=utf-8",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{ENVIRONMENT_URL}}/api/v1/synthetic/monitors",
+							"host": [
+								"{{ENVIRONMENT_URL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"synthetic",
+								"monitors"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "[Monitor]-[Office365 Token Refresh]-[DELETE]",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"setTimeout(function(){}, pm.variables.get(\"REQUEST_DELAY\"));\r",
+									"\r",
+									"pm.variables.unset(\"DELETE_TOKEN\");\r",
+									"postman.setNextRequest(\"[Monitor]-[Office365 Token Refresh]-[FIND]\");\r",
+									"\r",
+									"if (pm.response.code == 404) {\r",
+									"    return;\r",
+									"}\r",
+									"\r",
+									"pm.test(\"204 DELETED\", () => {\r",
+									"    pm.response.to.have.status(204);\r",
+									"});\r",
+									"\r",
+									"if(pm.response.code != 204) {\r",
+									"    postman.setNextRequest(null);\r",
+									"}\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json; charset=utf-8",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Api-Token {{API_TOKEN_MONITOR_SCHEDULING}}",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json; charset=utf-8",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{ENVIRONMENT_URL}}/api/v1/synthetic/monitors/{{DELETE_TOKEN}}",
+							"host": [
+								"{{ENVIRONMENT_URL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"synthetic",
+								"monitors",
+								"{{DELETE_TOKEN}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "[Monitor]-[Office365 Token Refresh]-[CREATE]",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"setTimeout(function(){}, pm.variables.get(\"REQUEST_DELAY\"));\r",
+									"\r",
+									"pm.test(\"200 OK\", () => {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"if(pm.response.code != 200) {\r",
+									"    postman.setNextRequest(null);\r",
+									"    return;\r",
+									"}\r",
+									"pm.variables.set(\"ID_MONITOR_TOKEN_REFRESH\", pm.response.json().entityId);\r",
+									"postman.setNextRequest(\"[Monitor]-[Office365 portal.office.com]-[FIND]\");"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json; charset=utf-8",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Api-Token {{API_TOKEN_MONITOR_SCHEDULING}}",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json; charset=utf-8",
+								"type": "text"
+							},
+							{
+								"key": "User-Agent",
+								"value": "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.186 Safari/537.36",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"name\": \"{{NAME_MONITOR_TOKEN_REFRESH}}\",\r\n  \"frequencyMin\": 30,\r\n  \"enabled\": true,\r\n  \"type\": \"HTTP\",\r\n  \"createdFrom\": \"API\",\r\n  \"script\": {\r\n    \"version\": \"1.0\",\r\n    \"requests\": [\r\n      {\r\n        \"description\": \"oauth2/v2.0/token\",\r\n        \"url\": \"https://login.microsoftonline.com/{{{ID_CREDENTIALS_OFFICE365_AZURE_TENANT}}|token}/oauth2/v2.0/token\",\r\n        \"method\": \"POST\",\r\n        \"requestBody\": \"client_id={{{ID_CREDENTIALS_OFFICE365_CLIENT_ID}}|token}&scope=https%3A%2F%2Fgraph.microsoft.com%2F.default&client_secret={{{ID_CREDENTIALS_OFFICE365_CLIENT_SECRET}}|token}&grant_type=client_credentials\",\r\n        \"validation\": {\r\n          \"rules\": [\r\n            {\r\n              \"value\": \">=400\",\r\n              \"passIfFound\": false,\r\n              \"type\": \"httpStatusesList\"\r\n            }\r\n          ],\r\n          \"rulesChaining\": \"or\"\r\n        },\r\n        \"configuration\": {\r\n          \"requestHeaders\": [\r\n            {\r\n              \"name\": \"Content-Type\",\r\n              \"value\": \"application/x-www-form-urlencoded\"\r\n            }\r\n          ],\r\n          \"acceptAnyCertificate\": true,\r\n          \"followRedirects\": true\r\n        },\r\n        \"postProcessingScript\": \"if (response.getStatusCode() != 200) {\\n    api.fail(\\\"HTTP error: \\\" + response.getStatusCode());\\n}\\napi.setValue(\\\"access_token\\\", JSON.parse(response.getResponseBody()).access_token);\"\r\n      },\r\n      {\r\n        \"description\": \"store-access-token\",\r\n        \"url\": \"{{ENVIRONMENT_URL}}/api/config/v1/credentials/{{ID_CREDENTIALS_OFFICE365_ACCESS_TOKEN}}\",\r\n        \"method\": \"PUT\",\r\n        \"requestBody\": \"{\\r\\n  \\\"name\\\": \\\"{{NAME_CREDENTIALS_OFFICE365_ACCESS_TOKEN}}\\\",\\r\\n  \\\"token\\\": \\\"{access_token}\\\",\\r\\n  \\\"type\\\": \\\"TOKEN\\\",\\r\\n  \\\"description\\\": \\\"\\\",\\r\\n  \\\"ownerAccessOnly\\\": false,\\r\\n  \\\"scope\\\": \\\"SYNTHETIC\\\"\\r\\n}\",\r\n        \"validation\": {\r\n          \"rules\": [\r\n            {\r\n              \"value\": \">=400\",\r\n              \"passIfFound\": false,\r\n              \"type\": \"httpStatusesList\"\r\n            }\r\n          ],\r\n          \"rulesChaining\": \"or\"\r\n        },\r\n        \"configuration\": {\r\n          \"requestHeaders\": [\r\n            {\r\n              \"name\": \"Accept\",\r\n              \"value\": \"application/json; charset=utf-8\"\r\n            },\r\n            {\r\n              \"name\": \"Authorization\",\r\n              \"value\": \"Api-Token {{{ID_CREDENTIALS_ACCESS_CREDENTIAL_VAULT}}|token}\"\r\n            },\r\n            {\r\n              \"name\": \"Content-Type\",\r\n              \"value\": \"application/json; charset=utf-8\"\r\n            }\r\n          ],\r\n          \"acceptAnyCertificate\": true,\r\n          \"followRedirects\": true\r\n        }\r\n      },\r\n      {\r\n        \"description\": \"oauth2/v2.0/manage_token\",\r\n        \"url\": \"https://login.microsoftonline.com/{{{ID_CREDENTIALS_OFFICE365_AZURE_TENANT}}|token}/oauth2/v2.0/token\",\r\n        \"method\": \"POST\",\r\n        \"requestBody\": \"client_id={{{ID_CREDENTIALS_OFFICE365_CLIENT_ID}}|token}&scope=https%3A%2F%2Fmanage.office.com%2F.default&client_secret={{{ID_CREDENTIALS_OFFICE365_CLIENT_SECRET}}|token}&grant_type=client_credentials\",\r\n        \"validation\": {\r\n          \"rules\": [\r\n            {\r\n              \"value\": \">=400\",\r\n              \"passIfFound\": false,\r\n              \"type\": \"httpStatusesList\"\r\n            }\r\n          ],\r\n          \"rulesChaining\": \"or\"\r\n        },\r\n        \"configuration\": {\r\n          \"requestHeaders\": [\r\n            {\r\n              \"name\": \"Content-Type\",\r\n              \"value\": \"application/x-www-form-urlencoded\"\r\n            }\r\n          ],\r\n          \"acceptAnyCertificate\": true,\r\n          \"followRedirects\": true\r\n        },\r\n        \"postProcessingScript\": \"if (response.getStatusCode() != 200) {\\n    api.fail(\\\"HTTP error: \\\" + response.getStatusCode());\\n}\\napi.setValue(\\\"manage_access_token\\\", JSON.parse(response.getResponseBody()).access_token);\"\r\n      },\r\n      {\r\n        \"description\": \"store-manage-access-token\",\r\n        \"url\": \"{{ENVIRONMENT_URL}}/api/config/v1/credentials/{{ID_CREDENTIALS_OFFICE365_MANAGE_ACCESS_TOKEN}}\",\r\n        \"method\": \"PUT\",\r\n        \"requestBody\": \"{\\r\\n  \\\"name\\\": \\\"{{NAME_CREDENTIALS_OFFICE365_MANAGE_ACCESS_TOKEN}}\\\",\\r\\n  \\\"token\\\": \\\"{manage_access_token}\\\",\\r\\n  \\\"type\\\": \\\"TOKEN\\\",\\r\\n  \\\"description\\\": \\\"\\\",\\r\\n  \\\"ownerAccessOnly\\\": false,\\r\\n  \\\"scope\\\": \\\"SYNTHETIC\\\"\\r\\n}\",\r\n        \"validation\": {\r\n          \"rules\": [\r\n            {\r\n              \"value\": \">=400\",\r\n              \"passIfFound\": false,\r\n              \"type\": \"httpStatusesList\"\r\n            }\r\n          ],\r\n          \"rulesChaining\": \"or\"\r\n        },\r\n        \"configuration\": {\r\n          \"requestHeaders\": [\r\n            {\r\n              \"name\": \"Accept\",\r\n              \"value\": \"application/json; charset=utf-8\"\r\n            },\r\n            {\r\n              \"name\": \"Authorization\",\r\n              \"value\": \"Api-Token {{{ID_CREDENTIALS_ACCESS_CREDENTIAL_VAULT}}|token}\"\r\n            },\r\n            {\r\n              \"name\": \"Content-Type\",\r\n              \"value\": \"application/json; charset=utf-8\"\r\n            }\r\n          ],\r\n          \"acceptAnyCertificate\": true,\r\n          \"followRedirects\": true\r\n        }\r\n      }      \r\n    ]\r\n  },\r\n  \"locations\": [\r\n    \"{{GEO_LOCATION_DUBLIN_ID}}\"\r\n  ],\r\n  \"anomalyDetection\": {\r\n    \"outageHandling\": {\r\n      \"globalOutage\": true,\r\n      \"localOutage\": false,\r\n      \"localOutagePolicy\": {\r\n        \"affectedLocations\": 1,\r\n        \"consecutiveRuns\": 3\r\n      }\r\n    },\r\n    \"loadingTimeThresholds\": {\r\n      \"enabled\": false,\r\n      \"thresholds\": [\r\n        {\r\n          \"type\": \"TOTAL\",\r\n          \"valueMs\": 0\r\n        }\r\n      ]\r\n    }\r\n  },\r\n  \"tags\": [],\r\n  \"managementZones\": [],\r\n  \"automaticallyAssignedApps\": [],\r\n  \"manuallyAssignedApps\": [],\r\n  \"requests\": [\r\n    {\r\n      \"name\": \"oauth2/v2.0/token\",\r\n      \"sequenceNumber\": 1\r\n    },\r\n    {\r\n      \"name\": \"store-access-token\",\r\n      \"sequenceNumber\": 2\r\n    },\r\n    {\r\n      \"name\": \"oauth2/v2.0/manage_token\",\r\n      \"sequenceNumber\": 3\r\n    },\r\n    {\r\n      \"name\": \"store-manage-access-token\",\r\n      \"sequenceNumber\": 4\r\n    }    \r\n  ]\r\n}"
+						},
+						"url": {
+							"raw": "{{ENVIRONMENT_URL}}/api/v1/synthetic/monitors",
+							"host": [
+								"{{ENVIRONMENT_URL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"synthetic",
+								"monitors"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "[13]-[Monitor]-[Office365 portal.office.com]",
+			"item": [
+				{
+					"name": "[Monitor]-[Office365 portal.office.com]-[FIND]",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"setTimeout(function(){}, pm.variables.get(\"REQUEST_DELAY\"));\r",
+									"\r",
+									"pm.variables.unset(\"DELETE_TOKEN\");\r",
+									"\r",
+									"pm.test(\"200 OK\", () => {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"if(pm.response.code != 200) {\r",
+									"    postman.setNextRequest(null);\r",
+									"    return;\r",
+									"}\r",
+									"\r",
+									"if (pm.environment.get(\"MODE\") == \"CLEANUP\") {\r",
+									"    postman.setNextRequest(\"[Monitor]-[Office365 Reports]-[FIND]\");\r",
+									"} else {\r",
+									"    postman.setNextRequest(\"[Monitor]-[Office365 portal.office.com]-[CREATE]\");\r",
+									"}\r",
+									"\r",
+									"var values = pm.response.json().monitors;\r",
+									"for (var i = 0; i < values.length; i++) {\r",
+									"    var value = values[i];\r",
+									"    var name = value.name.trim();\r",
+									"    var expectedName = pm.collectionVariables.get(\"NAME_MONITOR_PORTAL_OFFICE_COM\").trim();\r",
+									"    if (name == expectedName) {\r",
+									"        pm.variables.set(\"DELETE_TOKEN\", value.entityId); \r",
+									"        postman.setNextRequest(\"[Monitor]-[Office365 portal.office.com]-[DELETE]\");\r",
+									"        break;\r",
+									"    }\r",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json; charset=utf-8",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Api-Token {{API_TOKEN_MONITOR_SCHEDULING}}",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json; charset=utf-8",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{ENVIRONMENT_URL}}/api/v1/synthetic/monitors",
+							"host": [
+								"{{ENVIRONMENT_URL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"synthetic",
+								"monitors"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "[Monitor]-[Office365 portal.office.com]-[DELETE]",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"setTimeout(function(){}, pm.variables.get(\"REQUEST_DELAY\"));\r",
+									"\r",
+									"pm.variables.unset(\"DELETE_TOKEN\");\r",
+									"postman.setNextRequest(\"[Monitor]-[Office365 portal.office.com]-[FIND]\");\r",
+									"\r",
+									"if (pm.response.code == 404) {\r",
+									"    return;\r",
+									"}\r",
+									"\r",
+									"pm.test(\"204 DELETED\", () => {\r",
+									"    pm.response.to.have.status(204);\r",
+									"});\r",
+									"\r",
+									"if(pm.response.code != 204) {\r",
+									"    postman.setNextRequest(null);\r",
+									"}\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json; charset=utf-8",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Api-Token {{API_TOKEN_MONITOR_SCHEDULING}}",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json; charset=utf-8",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{ENVIRONMENT_URL}}/api/v1/synthetic/monitors/{{DELETE_TOKEN}}",
+							"host": [
+								"{{ENVIRONMENT_URL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"synthetic",
+								"monitors",
+								"{{DELETE_TOKEN}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "[Monitor]-[Office365 portal.office.com]-[CREATE]",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"setTimeout(function(){}, pm.variables.get(\"REQUEST_DELAY\"));\r",
+									"\r",
+									"pm.test(\"200 OK\", () => {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"if(pm.response.code != 200) {\r",
+									"    postman.setNextRequest(null);\r",
+									"    return;\r",
+									"}\r",
+									"pm.variables.set(\"ID_MONITOR_PORTAL_OFFICE_COM\", pm.response.json().entityId);\r",
+									"postman.setNextRequest(\"[Monitor]-[Office365 Reports]-[FIND]\");"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json; charset=utf-8",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Api-Token {{API_TOKEN_MONITOR_SCHEDULING}}",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json; charset=utf-8",
+								"type": "text"
+							},
+							{
+								"key": "User-Agent",
+								"value": "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.186 Safari/537.36",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"name\": \"{{NAME_MONITOR_PORTAL_OFFICE_COM}}\",\r\n  \"frequencyMin\": 1,\r\n  \"enabled\": true,\r\n  \"type\": \"HTTP\",\r\n  \"createdFrom\": \"GUI\",\r\n  \"script\": {\r\n    \"version\": \"1.0\",\r\n    \"requests\": [\r\n      {\r\n        \"description\": \"portal.office.com\",\r\n        \"url\": \"https://portal.office.com\",\r\n        \"method\": \"GET\",\r\n        \"configuration\": {\r\n          \"acceptAnyCertificate\": true,\r\n          \"followRedirects\": false\r\n        }\r\n      }\r\n    ]\r\n  },\r\n  \"locations\": [\r\n    \"{{GEO_LOCATION_CAPE_TOWN_ID}}\",\r\n    \"{{GEO_LOCATION_NVIRGINIA_ID}}\",\r\n    \"{{GEO_LOCATION_SYDNEY_ID}}\",\r\n    \"{{GEO_LOCATION_SAO_PAULO_ID}}\",\r\n    \"{{GEO_LOCATION_TOKYO_ID}}\",\r\n    \"{{GEO_LOCATION_DUBLIN_ID}}\"\r\n  ],\r\n  \"anomalyDetection\": {\r\n    \"outageHandling\": {\r\n      \"globalOutage\": true,\r\n      \"localOutage\": false,\r\n      \"localOutagePolicy\": {\r\n        \"affectedLocations\": 1,\r\n        \"consecutiveRuns\": 3\r\n      }\r\n    },\r\n    \"loadingTimeThresholds\": {\r\n      \"enabled\": false,\r\n      \"thresholds\": [\r\n        {\r\n          \"type\": \"TOTAL\",\r\n          \"valueMs\": 0\r\n        }\r\n      ]\r\n    }\r\n  },\r\n  \"tags\": [\r\n    {\r\n      \"source\": \"USER\",\r\n      \"context\": \"CONTEXTLESS\",\r\n      \"key\": \"Office365\"\r\n    }\r\n  ],\r\n  \"managementZones\": [],\r\n  \"automaticallyAssignedApps\": [],\r\n  \"manuallyAssignedApps\": [],\r\n  \"requests\": [\r\n    {\r\n      \"name\": \"portal.office.com\",\r\n      \"sequenceNumber\": 1\r\n    }\r\n  ]\r\n}"
+						},
+						"url": {
+							"raw": "{{ENVIRONMENT_URL}}/api/v1/synthetic/monitors",
+							"host": [
+								"{{ENVIRONMENT_URL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"synthetic",
+								"monitors"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "[14]-[Monitor]-[Office365 Reports]",
+			"item": [
+				{
+					"name": "[Monitor]-[Office365 Reports]-[FIND]",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"setTimeout(function(){}, pm.variables.get(\"REQUEST_DELAY\"));\r",
+									"\r",
+									"pm.variables.unset(\"DELETE_TOKEN\");\r",
+									"\r",
+									"pm.test(\"200 OK\", () => {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"if(pm.response.code != 200) {\r",
+									"    postman.setNextRequest(null);\r",
+									"    return;\r",
+									"}\r",
+									"\r",
+									"if (pm.environment.get(\"MODE\") == \"CLEANUP\") {\r",
+									"    postman.setNextRequest(\"[Dashboard]-[Office365]-[FIND]\");\r",
+									"} else {\r",
+									"    postman.setNextRequest(\"[Monitor]-[Office365 Reports]-[CREATE]\");\r",
+									"}\r",
+									"\r",
+									"var values = pm.response.json().monitors;\r",
+									"for (var i = 0; i < values.length; i++) {\r",
+									"    var value = values[i];\r",
+									"    var name = value.name.trim();\r",
+									"    var expectedName = pm.collectionVariables.get(\"NAME_MONITOR_REPORTS\").trim();\r",
+									"    if (name == expectedName) {\r",
+									"        pm.variables.set(\"DELETE_TOKEN\", value.entityId); \r",
+									"        postman.setNextRequest(\"[Monitor]-[Office365 Reports]-[DELETE]\");\r",
+									"        break;\r",
+									"    }\r",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json; charset=utf-8",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Api-Token {{API_TOKEN_MONITOR_SCHEDULING}}",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json; charset=utf-8",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{ENVIRONMENT_URL}}/api/v1/synthetic/monitors",
+							"host": [
+								"{{ENVIRONMENT_URL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"synthetic",
+								"monitors"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "[Monitor]-[Office365 Reports]-[DELETE]",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"setTimeout(function(){}, pm.variables.get(\"REQUEST_DELAY\"));\r",
+									"\r",
+									"pm.variables.unset(\"DELETE_TOKEN\");\r",
+									"postman.setNextRequest(\"[Monitor]-[Office365 Reports]-[FIND]\");\r",
+									"\r",
+									"if (pm.response.code == 404) {\r",
+									"    return;\r",
+									"}\r",
+									"\r",
+									"pm.test(\"204 DELETED\", () => {\r",
+									"    pm.response.to.have.status(204);\r",
+									"});\r",
+									"\r",
+									"if(pm.response.code != 204) {\r",
+									"    postman.setNextRequest(null);\r",
+									"}\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json; charset=utf-8",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Api-Token {{API_TOKEN_MONITOR_SCHEDULING}}",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json; charset=utf-8",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{ENVIRONMENT_URL}}/api/v1/synthetic/monitors/{{DELETE_TOKEN}}",
+							"host": [
+								"{{ENVIRONMENT_URL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"synthetic",
+								"monitors",
+								"{{DELETE_TOKEN}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "[Monitor]-[Office365 Reports]-[CREATE]",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"setTimeout(function(){}, pm.variables.get(\"REQUEST_DELAY\"));\r",
+									"\r",
+									"pm.test(\"200 OK\", () => {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"if(pm.response.code != 200) {\r",
+									"    postman.setNextRequest(null);\r",
+									"    return;\r",
+									"}\r",
+									"pm.variables.set(\"ID_MONITOR_REPORTS\", pm.response.json().entityId);\r",
+									"postman.setNextRequest(\"[Dashboard]-[Office365]-[FIND]\");"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json; charset=utf-8",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Api-Token {{API_TOKEN_MONITOR_SCHEDULING}}",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json; charset=utf-8",
+								"type": "text"
+							},
+							{
+								"key": "User-Agent",
+								"value": "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.186 Safari/537.36",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"entityId\": \"\",\r\n  \"name\": \"{{NAME_MONITOR_REPORTS}}\",\r\n  \"frequencyMin\": 1,\r\n  \"enabled\": true,\r\n  \"type\": \"HTTP\",\r\n  \"createdFrom\": \"GUI\",\r\n  \"script\": {\r\n    \"version\": \"1.0\",\r\n    \"requests\": [\r\n      {\r\n        \"description\": \"getOffice365ActiveUserCounts\",\r\n        \"url\": \"https://graph.microsoft.com/v1.0/reports/getOffice365ActiveUserCounts(period='D7')\",\r\n        \"method\": \"GET\",\r\n        \"configuration\": {\r\n          \"requestHeaders\": [\r\n            {\r\n              \"name\": \"Authorization\",\r\n              \"value\": \"Bearer {{{ID_CREDENTIALS_OFFICE365_ACCESS_TOKEN}}|token}\"\r\n            },\r\n            {\r\n              \"name\": \"Accept\",\r\n              \"value\": \"application/json\"\r\n            }\r\n          ],\r\n          \"acceptAnyCertificate\": true,\r\n          \"followRedirects\": true\r\n        },\r\n        \"postProcessingScript\": \"if (response.getStatusCode() != 200) {\\n    api.fail(\\\"HTTP error: \\\" + response.getStatusCode());\\n}\\nvar register = function(obj, key, value) {\\n  if (key in obj) {\\n      return;\\n  }\\n  value = value.trim();\\n  if (value.length === 0) {\\n      return;\\n  }\\n  var iValue = parseInt(value);\\n  if (isNaN(iValue)) {\\n      return;\\n  }\\n  obj[key] = iValue;\\n};\\nvar lines = response.getResponseBody().trim().split(\\\"\\\\n\\\");\\nvar idx = 0;\\n\\nvar counts = {};\\nfor (idx = lines.length - 1; idx >= 0; idx--) {\\n    var line = lines[idx].trim();\\n    if (line.length === 0) {\\n        continue;\\n    }\\n    if (line.startsWith(\\\"Report Refresh Date\\\")) {\\n        continue;\\n    }\\n    var values = line.split(\\\",\\\");\\n    register(counts, \\\"office365\\\", values[1]);\\n    register(counts, \\\"exchange\\\", values[2]);\\n    register(counts, \\\"onedrive\\\", values[3]);\\n    register(counts, \\\"sharepoint\\\", values[4]);\\n    register(counts, \\\"skype\\\", values[5]);\\n    register(counts, \\\"yammer\\\", values[6]);\\n    register(counts, \\\"teams\\\", values[7]);\\n}\\n\\nif (\\\"office365\\\" in counts) api.setValue(\\\"office365\\\", counts.office365);\\nif (\\\"exchange\\\" in counts) api.setValue(\\\"exchange\\\", counts.exchange);\\nif (\\\"onedrive\\\" in counts) api.setValue(\\\"onedrive\\\", counts.onedrive);\\nif (\\\"sharepoint\\\" in counts) api.setValue(\\\"sharepoint\\\", counts.sharepoint);\\nif (\\\"skype\\\" in counts) api.setValue(\\\"skype\\\", counts.skype);\\nif (\\\"yammer\\\" in counts) api.setValue(\\\"yammer\\\", counts.yammer);\\nif (\\\"teams\\\" in counts) api.setValue(\\\"teams\\\", counts.teams);\"\r\n      },\r\n      {\r\n        \"description\": \"getMailboxUsageQuotaStatusMailboxCounts\",\r\n        \"url\": \"https://graph.microsoft.com/v1.0/reports/getMailboxUsageQuotaStatusMailboxCounts(period='D7')\",\r\n        \"method\": \"GET\",\r\n        \"validation\": {\r\n          \"rules\": [\r\n            {\r\n              \"value\": \">=400\",\r\n              \"passIfFound\": false,\r\n              \"type\": \"httpStatusesList\"\r\n            }\r\n          ],\r\n          \"rulesChaining\": \"or\"\r\n        },\r\n        \"configuration\": {\r\n          \"requestHeaders\": [\r\n            {\r\n              \"name\": \"Authorization\",\r\n              \"value\": \"Bearer {{{ID_CREDENTIALS_OFFICE365_ACCESS_TOKEN}}|token}\"\r\n            }\r\n          ],\r\n          \"acceptAnyCertificate\": true,\r\n          \"followRedirects\": true\r\n        },\r\n        \"postProcessingScript\": \"if (response.getStatusCode() != 200) {\\n    api.fail(\\\"HTTP error: \\\" + response.getStatusCode());\\n}\\nvar register = function(obj, key, value) {\\n  if (key in obj) {\\n      return;\\n  }\\n  value = value.trim();\\n  if (value.length === 0) {\\n      return;\\n  }\\n  var iValue = parseInt(value);\\n  if (isNaN(iValue)) {\\n      return;\\n  }\\n  obj[key] = iValue;\\n};\\nvar lines = response.getResponseBody().trim().split(\\\"\\\\n\\\");\\nvar idx = 0;\\n\\nvar counts = {};\\nfor (idx = lines.length - 1; idx >= 0; idx--) {\\n    var line = lines[idx].trim();\\n    if (line.length === 0) {\\n        continue;\\n    }\\n    if (line.startsWith(\\\"Report Refresh Date\\\")) {\\n        continue;\\n    }\\n    var values = line.split(\\\",\\\");\\n    register(counts, \\\"under_limit\\\", values[1]);\\n    register(counts, \\\"warning_issued\\\", values[2]);\\n    register(counts, \\\"send_prohibited\\\", values[3]);\\n    register(counts, \\\"send_receive_prohibited\\\", values[4]);\\n    register(counts, \\\"indeterminate\\\", values[5]);\\n}\\n\\napi.setValue(\\\"under_limit\\\", (\\\"under_limit\\\" in counts) ? counts.under_limit : 0);\\napi.setValue(\\\"warning_issued\\\", (\\\"warning_issued\\\" in counts) ? counts.warning_issued : 0);\\napi.setValue(\\\"send_prohibited\\\", (\\\"send_prohibited\\\" in counts) ? counts.send_prohibited : 0);\\napi.setValue(\\\"send_receive_prohibited\\\", (\\\"send_receive_prohibited\\\" in counts) ? counts.send_receive_prohibited : 0);\\napi.setValue(\\\"indeterminate\\\", (\\\"indeterminate\\\" in counts) ? counts.send_receive_prohibited : 0);\"\r\n      },\r\n      {\r\n        \"description\": \"getMailboxUsageStorage\",\r\n        \"url\": \"https://graph.microsoft.com/v1.0/reports/getMailboxUsageStorage(period='D7')\",\r\n        \"method\": \"GET\",\r\n        \"validation\": {\r\n          \"rules\": [\r\n            {\r\n              \"value\": \">=400\",\r\n              \"passIfFound\": false,\r\n              \"type\": \"httpStatusesList\"\r\n            }\r\n          ],\r\n          \"rulesChaining\": \"or\"\r\n        },\r\n        \"configuration\": {\r\n          \"requestHeaders\": [\r\n            {\r\n              \"name\": \"Authorization\",\r\n              \"value\": \"Bearer {{{ID_CREDENTIALS_OFFICE365_ACCESS_TOKEN}}|token}\"\r\n            }\r\n          ],\r\n          \"acceptAnyCertificate\": true,\r\n          \"followRedirects\": true\r\n        },\r\n        \"postProcessingScript\": \"if (response.getStatusCode() != 200) {\\n    api.fail(\\\"HTTP error: \\\" + response.getStatusCode());\\n}\\nvar register = function(obj, key, value) {\\n  if (key in obj) {\\n      return;\\n  }\\n  value = value.trim();\\n  if (value.length === 0) {\\n      return;\\n  }\\n  var iValue = parseInt(value);\\n  if (isNaN(iValue)) {\\n      return;\\n  }\\n  obj[key] = iValue;\\n};\\nvar lines = response.getResponseBody().trim().split(\\\"\\\\n\\\");\\nvar idx = 0;\\n\\nvar counts = {};\\nfor (idx = lines.length - 1; idx >= 0; idx--) {\\n    var line = lines[idx].trim();\\n    if (line.length === 0) {\\n        continue;\\n    }\\n    if (line.startsWith(\\\"Report Refresh Date\\\")) {\\n        continue;\\n    }\\n    var values = line.split(\\\",\\\");\\n    register(counts, \\\"storage_used\\\", values[1]);\\n}\\n\\napi.setValue(\\\"storage_used\\\", (\\\"storage_used\\\" in counts) ? counts.storage_used / 1024 / 1024 / 1024 : 0);\\napi.setValue(\\\"storage_used_mailbox\\\", (\\\"storage_used\\\" in counts) ? counts.storage_used / 1024 / 1024 / 1024 : 0);\"\r\n      },\r\n      {\r\n        \"description\": \"getSharePointSiteUsageStorage\",\r\n        \"url\": \"https://graph.microsoft.com/v1.0/reports/getSharePointSiteUsageStorage(period='D7')\",\r\n        \"method\": \"GET\",\r\n        \"validation\": {\r\n          \"rules\": [\r\n            {\r\n              \"value\": \">=400\",\r\n              \"passIfFound\": false,\r\n              \"type\": \"httpStatusesList\"\r\n            }\r\n          ],\r\n          \"rulesChaining\": \"or\"\r\n        },\r\n        \"configuration\": {\r\n          \"requestHeaders\": [\r\n            {\r\n              \"name\": \"Authorization\",\r\n              \"value\": \"Bearer {{{ID_CREDENTIALS_OFFICE365_ACCESS_TOKEN}}|token}\"\r\n            }\r\n          ],\r\n          \"acceptAnyCertificate\": true,\r\n          \"followRedirects\": true\r\n        },\r\n        \"postProcessingScript\": \"if (response.getStatusCode() != 200) {\\n    api.fail(\\\"HTTP error: \\\" + response.getStatusCode());\\n}\\nvar register = function(obj, key, value) {\\n  if (key in obj) {\\n      return;\\n  }\\n  value = value.trim();\\n  if (value.length === 0) {\\n      return;\\n  }\\n  var iValue = parseInt(value);\\n  if (isNaN(iValue)) {\\n      return;\\n  }\\n  obj[key] = iValue;\\n};\\nvar lines = response.getResponseBody().trim().split(\\\"\\\\n\\\");\\nvar idx = 0;\\n\\nvar counts = {};\\nfor (idx = lines.length - 1; idx >= 0; idx--) {\\n    var line = lines[idx].trim();\\n    if (line.length === 0) {\\n        continue;\\n    }\\n    if (line.startsWith(\\\"Report Refresh Date\\\")) {\\n        continue;\\n    }\\n    if (!line.includes(\\\",All,\\\")) {\\n        continue;\\n    }\\n    var values = line.split(\\\",\\\");\\n    register(counts, \\\"storage_used\\\", values[2]);\\n}\\n\\napi.setValue(\\\"storage_used_sharepoint\\\", (\\\"storage_used\\\" in counts) ? counts.storage_used / 1024 / 1024 / 1024 : 0);\"\r\n      },\r\n      {\r\n        \"description\": \"getOneDriveUsageStorage\",\r\n        \"url\": \"https://graph.microsoft.com/v1.0/reports/getOneDriveUsageStorage(period='D7')\",\r\n        \"method\": \"GET\",\r\n        \"validation\": {\r\n          \"rules\": [\r\n            {\r\n              \"value\": \">=400\",\r\n              \"passIfFound\": false,\r\n              \"type\": \"httpStatusesList\"\r\n            }\r\n          ],\r\n          \"rulesChaining\": \"or\"\r\n        },\r\n        \"configuration\": {\r\n          \"requestHeaders\": [\r\n            {\r\n              \"name\": \"Authorization\",\r\n              \"value\": \"Bearer {{{ID_CREDENTIALS_OFFICE365_ACCESS_TOKEN}}|token}\"\r\n            }\r\n          ],\r\n          \"acceptAnyCertificate\": true,\r\n          \"followRedirects\": true\r\n        },\r\n        \"postProcessingScript\": \"if (response.getStatusCode() != 200) {\\n    api.fail(\\\"HTTP error: \\\" + response.getStatusCode());\\n}\\nvar register = function(obj, key, value) {\\n  if (key in obj) {\\n      return;\\n  }\\n  value = value.trim();\\n  if (value.length === 0) {\\n      return;\\n  }\\n  var iValue = parseInt(value);\\n  if (isNaN(iValue)) {\\n      return;\\n  }\\n  obj[key] = iValue;\\n};\\nvar lines = response.getResponseBody().trim().split(\\\"\\\\n\\\");\\nvar idx = 0;\\n\\nvar counts = {};\\nfor (idx = lines.length - 1; idx >= 0; idx--) {\\n    var line = lines[idx].trim();\\n    if (line.length === 0) {\\n        continue;\\n    }\\n    if (line.startsWith(\\\"Report Refresh Date\\\")) {\\n        continue;\\n    }\\n    if (!line.includes(\\\",All,\\\")) {\\n        continue;\\n    }\\n    var values = line.split(\\\",\\\");\\n    register(counts, \\\"storage_used\\\", values[2]);\\n}\\n\\napi.setValue(\\\"storage_used_onedrive\\\", (\\\"storage_used\\\" in counts) ? counts.storage_used / 1024 / 1024 / 1024 : 0);\"\r\n      },\r\n      {\r\n        \"description\": \"ServiceComms/CurrentStatus\",\r\n        \"url\": \"https://manage.office.com/api/v1.0/{{{ID_CREDENTIALS_OFFICE365_AZURE_TENANT}}|token}/ServiceComms/CurrentStatus\",\r\n        \"method\": \"GET\",\r\n        \"validation\": {\r\n          \"rules\": [\r\n            {\r\n              \"value\": \">=400\",\r\n              \"passIfFound\": false,\r\n              \"type\": \"httpStatusesList\"\r\n            }\r\n          ],\r\n          \"rulesChaining\": \"or\"\r\n        },\r\n        \"configuration\": {\r\n          \"requestHeaders\": [\r\n            {\r\n              \"name\": \"Authorization\",\r\n              \"value\": \"Bearer {{{ID_CREDENTIALS_OFFICE365_MANAGE_ACCESS_TOKEN}}|token}\"\r\n            },\r\n            {\r\n              \"name\": \"Accept\",\r\n              \"value\": \"application/json\"\r\n            }\r\n          ],\r\n          \"acceptAnyCertificate\": true,\r\n          \"followRedirects\": true\r\n        },\r\n        \"postProcessingScript\": \"var healthyStates = [\\r\\n    \\\"PostIncidentReviewPublished\\\",\\r\\n    \\\"ServiceRestored\\\",\\r\\n    \\\"ServiceOperational\\\",\\r\\n    \\\"FalsePositive\\\"\\r\\n];\\r\\n/* Work load status per https://docs.microsoft.com/en-us/office/office-365-management-api/office-365-service-communications-api-reference#status-definitions\\r\\nInvestigating\\r\\nServiceDegradation\\r\\nServiceInterruption\\r\\nRestoringService\\r\\nExtendedRecovery\\r\\nInvestigationSuspended\\r\\nServiceRestored\\r\\nFalsePositive\\r\\nPostIncidentReportPublished\\r\\nServiceOperational\\r\\n*/\\r\\n\\r\\njson = JSON.parse(response.getResponseBody());\\r\\n\\r\\nvar payload = \\\"office365.service.status.queried 1\\\";\\r\\njson.value.forEach(element => {\\r\\n    payload = payload + \\\"\\\\noffice365.service.status,workload=\\\" + element.Workload + \\\",status=\\\" + element.Status + \\\",healthy=\\\" + (healthyStates.indexOf(element.Status) >= 0) + \\\" 1\\\";\\r\\n});\\r\\napi.setValue(\\\"service_status\\\", payload);\"\r\n      },            \r\n      {\r\n        \"description\": \"api/v2/metrics/ingest\",\r\n        \"url\": \"{{ENVIRONMENT_URL}}/api/v2/metrics/ingest\",\r\n        \"method\": \"POST\",\r\n        \"requestBody\": \"office365.user.count,product=sharepoint {sharepoint}\\noffice365.user.count,product=onedrive {onedrive}\\noffice365.user.count,product=yammer {yammer}\\noffice365.user.count,product=office365 {office365}\\noffice365.user.count,product=skype {skype}\\noffice365.user.count,product=exchange {exchange}\\noffice365.user.count,product=teams {teams}\\noffice365.mailbox.quota.count,category=under_limit {under_limit}\\noffice365.mailbox.quota.count,category=warning_issued {warning_issued}\\noffice365.mailbox.quota.count,category=send_prohibited {send_prohibited}\\noffice365.mailbox.quota.count,category=send_receive_prohibited {send_receive_prohibited}\\noffice365.mailbox.quota.count,category=indeterminate {indeterminate}\\noffice365.storage.used.bytes,site=outlook {storage_used_mailbox}\\noffice365.storage.used.bytes,site=sharepoint {storage_used_sharepoint}\\noffice365.storage.used.bytes,site=onedrive {storage_used_onedrive}\\n{service_status}\",\r\n        \"validation\": {\r\n          \"rules\": [\r\n            {\r\n              \"value\": \">=400\",\r\n              \"passIfFound\": false,\r\n              \"type\": \"httpStatusesList\"\r\n            }\r\n          ],\r\n          \"rulesChaining\": \"or\"\r\n        },\r\n        \"configuration\": {\r\n          \"requestHeaders\": [\r\n            {\r\n              \"name\": \"Content-Type\",\r\n              \"value\": \"text/plain\"\r\n            },\r\n            {\r\n              \"name\": \"Authorization\",\r\n              \"value\": \"Api-Token {{{ID_CREDENTIALS_METRICS_INGEST}}|token}\"\r\n            }\r\n          ],\r\n          \"acceptAnyCertificate\": true,\r\n          \"followRedirects\": true\r\n        }\r\n      }\r\n    ]\r\n  },\r\n  \"locations\": [\r\n    \"{{GEO_LOCATION_LONDON_ID}}\"\r\n  ],\r\n  \"anomalyDetection\": {\r\n    \"outageHandling\": {\r\n      \"globalOutage\": true,\r\n      \"localOutage\": false,\r\n      \"localOutagePolicy\": {\r\n        \"affectedLocations\": 1,\r\n        \"consecutiveRuns\": 3\r\n      }\r\n    },\r\n    \"loadingTimeThresholds\": {\r\n      \"enabled\": false,\r\n      \"thresholds\": [\r\n        {\r\n          \"type\": \"TOTAL\",\r\n          \"valueMs\": 0\r\n        }\r\n      ]\r\n    }\r\n  },\r\n  \"tags\": [],\r\n  \"managementZones\": [],\r\n  \"automaticallyAssignedApps\": [],\r\n  \"manuallyAssignedApps\": [],\r\n  \"requests\": [\r\n    {\r\n      \"name\": \"getOffice365ActiveUserCounts\",\r\n      \"sequenceNumber\": 1\r\n    },\r\n    {\r\n        \"name\": \"getMailboxUsageQuotaStatusMailboxCounts\",\r\n        \"sequenceNumber\": 2\r\n    },\r\n    {\r\n        \"name\": \"getMailboxUsageStorage\",\r\n        \"sequenceNumber\": 3\r\n    },\r\n    {\r\n        \"name\": \"getSharePointSiteUsageStorage\",\r\n        \"sequenceNumber\": 4\r\n    },\r\n    {\r\n        \"name\": \"getOneDriveUsageStorage\",\r\n        \"sequenceNumber\": 5\r\n    },\r\n    {\r\n      \"name\": \"ServiceComms/CurrentStatus\",\r\n      \"sequenceNumber\": 6\r\n    },\r\n    {\r\n      \"name\": \"api/v2/metrics/ingest\",\r\n      \"sequenceNumber\": 7\r\n    }\r\n  ]\r\n}"
+						},
+						"url": {
+							"raw": "{{ENVIRONMENT_URL}}/api/v1/synthetic/monitors",
+							"host": [
+								"{{ENVIRONMENT_URL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"synthetic",
+								"monitors"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "[15]-[Dashboard]-[Office365]",
+			"item": [
+				{
+					"name": "[Dashboard]-[Office365]-[FIND]",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"setTimeout(function(){}, pm.variables.get(\"REQUEST_DELAY\"));\r",
+									"\r",
+									"pm.variables.unset(\"DELETE_TOKEN\");\r",
+									"\r",
+									"pm.test(\"200 OK\", () => {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"if(pm.response.code != 200) {\r",
+									"    postman.setNextRequest(null);\r",
+									"    return;\r",
+									"}\r",
+									"\r",
+									"if (pm.environment.get(\"MODE\") == \"CLEANUP\") {\r",
+									"    postman.setNextRequest(\"[CLEANUP]-[API Token]-[Monitor Creation]-[DELETE]\");\r",
+									"} else {\r",
+									"    postman.setNextRequest(\"[Dashboard]-[Office365]-[CREATE]\");\r",
+									"}\r",
+									"\r",
+									"var values = pm.response.json().dashboards;\r",
+									"for (var i = 0; i < values.length; i++) {\r",
+									"    var value = values[i];\r",
+									"    var name = value.name.trim();\r",
+									"    var expectedName = pm.collectionVariables.get(\"NAME_DASHBOARD\").trim();\r",
+									"    if (name == expectedName) {\r",
+									"        pm.variables.set(\"DELETE_TOKEN\", value.id); \r",
+									"        postman.setNextRequest(\"[Dashboard]-[Office365]-[DELETE]\");\r",
+									"        break;\r",
+									"    }\r",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json; charset=utf-8",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Api-Token {{API_TOKEN_MONITOR_SCHEDULING}}",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json; charset=utf-8",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{ENVIRONMENT_URL}}/api/config/v1/dashboards",
+							"host": [
+								"{{ENVIRONMENT_URL}}"
+							],
+							"path": [
+								"api",
+								"config",
+								"v1",
+								"dashboards"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "[Dashboard]-[Office365]-[DELETE]",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"setTimeout(function(){}, pm.variables.get(\"REQUEST_DELAY\"));\r",
+									"\r",
+									"pm.variables.unset(\"DELETE_TOKEN\");\r",
+									"postman.setNextRequest(\"[Dashboard]-[Office365]-[FIND]\");\r",
+									"\r",
+									"if (pm.response.code == 404) {\r",
+									"    return;\r",
+									"}\r",
+									"\r",
+									"pm.test(\"204 DELETED\", () => {\r",
+									"    pm.response.to.have.status(204);\r",
+									"});\r",
+									"\r",
+									"if(pm.response.code != 204) {\r",
+									"    postman.setNextRequest(null);\r",
+									"}\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json; charset=utf-8",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Api-Token {{API_TOKEN_MONITOR_SCHEDULING}}",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json; charset=utf-8",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{ENVIRONMENT_URL}}/api/config/v1/dashboards/{{DELETE_TOKEN}}",
+							"host": [
+								"{{ENVIRONMENT_URL}}"
+							],
+							"path": [
+								"api",
+								"config",
+								"v1",
+								"dashboards",
+								"{{DELETE_TOKEN}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "[Dashboard]-[Office365]-[CREATE]",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"setTimeout(function(){}, pm.variables.get(\"REQUEST_DELAY\"));\r",
+									"\r",
+									"pm.test(\"201 CREATED\", () => {\r",
+									"    pm.response.to.have.status(201);\r",
+									"});\r",
+									"\r",
+									"if(pm.response.code != 201) {\r",
+									"    postman.setNextRequest(null);\r",
+									"    return;\r",
+									"}\r",
+									"pm.variables.set(\"ID_DASHBOARD\", pm.response.json().id);\r",
+									"postman.setNextRequest(\"[Dashboard]-[Office365]-[SHARE]\");"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json; charset=utf-8",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Api-Token {{API_TOKEN_MONITOR_SCHEDULING}}",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json; charset=utf-8",
+								"type": "text"
+							},
+							{
+								"key": "User-Agent",
+								"value": "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.186 Safari/537.36",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"dashboardMetadata\": {\r\n    \"name\": \"{{NAME_DASHBOARD}}\",\r\n    \"shared\": true,\r\n    \"owner\": \"Dynatrace\"\r\n  },\r\n  \"tiles\": [\r\n    {\r\n      \"name\": \"Exchange\",\r\n      \"tileType\": \"DATA_EXPLORER\",\r\n      \"configured\": true,\r\n      \"bounds\": {\r\n        \"top\": 114,\r\n        \"left\": 152,\r\n        \"width\": 152,\r\n        \"height\": 76\r\n      },\r\n      \"tileFilter\": {},\r\n      \"customName\": \"Data explorer results\",\r\n      \"queries\": [\r\n        {\r\n          \"id\": \"A\",\r\n          \"metric\": \"office365.user.count.gauge\",\r\n          \"spaceAggregation\": \"MAX\",\r\n          \"timeAggregation\": \"DEFAULT\",\r\n          \"splitBy\": [],\r\n          \"filterBy\": {\r\n            \"filterOperator\": \"AND\",\r\n            \"nestedFilters\": [\r\n              {\r\n                \"filter\": \"product\",\r\n                \"filterType\": \"DIMENSION\",\r\n                \"filterOperator\": \"OR\",\r\n                \"nestedFilters\": [],\r\n                \"criteria\": [\r\n                  {\r\n                    \"value\": \"exchange\",\r\n                    \"evaluator\": \"EQ\"\r\n                  }\r\n                ]\r\n              }\r\n            ],\r\n            \"criteria\": []\r\n          },\r\n          \"enabled\": true\r\n        }\r\n      ],\r\n      \"visualConfig\": {\r\n        \"type\": \"SINGLE_VALUE\",\r\n        \"global\": {\r\n          \"theme\": \"DEFAULT\",\r\n          \"threshold\": {\r\n            \"axisTarget\": \"LEFT\",\r\n            \"columnId\": \"office365.user.count.gauge:fold:filter(and(eq(product,exchange))):splitBy():max:auto:sort(value(avg,descending)):limit(100)\",\r\n            \"rules\": [\r\n              {\r\n                \"color\": \"#7dc540\"\r\n              },\r\n              {\r\n                \"color\": \"#f5d30f\"\r\n              },\r\n              {\r\n                \"color\": \"#dc172a\"\r\n              }\r\n            ]\r\n          },\r\n          \"seriesType\": \"LINE\",\r\n          \"hasTrendline\": true\r\n        },\r\n        \"rules\": [\r\n          {\r\n            \"matcher\": \"A:\",\r\n            \"properties\": {\r\n              \"seriesType\": \"LINE\"\r\n            }\r\n          }\r\n        ]\r\n      }\r\n    },\r\n    {\r\n      \"name\": \"Active Users\",\r\n      \"tileType\": \"HEADER\",\r\n      \"configured\": true,\r\n      \"bounds\": {\r\n        \"top\": 0,\r\n        \"left\": 0,\r\n        \"width\": 608,\r\n        \"height\": 38\r\n      },\r\n      \"tileFilter\": {}\r\n    },\r\n    {\r\n      \"name\": \"Skype\",\r\n      \"tileType\": \"DATA_EXPLORER\",\r\n      \"configured\": true,\r\n      \"bounds\": {\r\n        \"top\": 38,\r\n        \"left\": 152,\r\n        \"width\": 152,\r\n        \"height\": 76\r\n      },\r\n      \"tileFilter\": {},\r\n      \"customName\": \"Data explorer results\",\r\n      \"queries\": [\r\n        {\r\n          \"id\": \"A\",\r\n          \"metric\": \"office365.user.count.gauge\",\r\n          \"spaceAggregation\": \"MAX\",\r\n          \"timeAggregation\": \"DEFAULT\",\r\n          \"splitBy\": [],\r\n          \"filterBy\": {\r\n            \"filterOperator\": \"AND\",\r\n            \"nestedFilters\": [\r\n              {\r\n                \"filter\": \"product\",\r\n                \"filterType\": \"DIMENSION\",\r\n                \"filterOperator\": \"OR\",\r\n                \"nestedFilters\": [],\r\n                \"criteria\": [\r\n                  {\r\n                    \"value\": \"skype\",\r\n                    \"evaluator\": \"EQ\"\r\n                  }\r\n                ]\r\n              }\r\n            ],\r\n            \"criteria\": []\r\n          },\r\n          \"enabled\": true\r\n        }\r\n      ],\r\n      \"visualConfig\": {\r\n        \"type\": \"SINGLE_VALUE\",\r\n        \"global\": {\r\n          \"theme\": \"DEFAULT\",\r\n          \"threshold\": {\r\n            \"axisTarget\": \"LEFT\",\r\n            \"columnId\": \"office365.user.count.gauge:fold:filter(and(eq(product,exchange))):splitBy():max:auto:sort(value(avg,descending)):limit(100)\",\r\n            \"rules\": [\r\n              {\r\n                \"color\": \"#7dc540\"\r\n              },\r\n              {\r\n                \"color\": \"#f5d30f\"\r\n              },\r\n              {\r\n                \"color\": \"#dc172a\"\r\n              }\r\n            ]\r\n          },\r\n          \"seriesType\": \"LINE\",\r\n          \"hasTrendline\": true\r\n        },\r\n        \"rules\": [\r\n          {\r\n            \"matcher\": \"A:\",\r\n            \"properties\": {\r\n              \"seriesType\": \"LINE\"\r\n            }\r\n          }\r\n        ]\r\n      }\r\n    },\r\n    {\r\n      \"name\": \"OneDrive\",\r\n      \"tileType\": \"DATA_EXPLORER\",\r\n      \"configured\": true,\r\n      \"bounds\": {\r\n        \"top\": 38,\r\n        \"left\": 304,\r\n        \"width\": 152,\r\n        \"height\": 76\r\n      },\r\n      \"tileFilter\": {},\r\n      \"customName\": \"Data explorer results\",\r\n      \"queries\": [\r\n        {\r\n          \"id\": \"A\",\r\n          \"metric\": \"office365.user.count.gauge\",\r\n          \"spaceAggregation\": \"MAX\",\r\n          \"timeAggregation\": \"DEFAULT\",\r\n          \"splitBy\": [],\r\n          \"filterBy\": {\r\n            \"filterOperator\": \"AND\",\r\n            \"nestedFilters\": [\r\n              {\r\n                \"filter\": \"product\",\r\n                \"filterType\": \"DIMENSION\",\r\n                \"filterOperator\": \"OR\",\r\n                \"nestedFilters\": [],\r\n                \"criteria\": [\r\n                  {\r\n                    \"value\": \"onedrive\",\r\n                    \"evaluator\": \"EQ\"\r\n                  }\r\n                ]\r\n              }\r\n            ],\r\n            \"criteria\": []\r\n          },\r\n          \"enabled\": true\r\n        }\r\n      ],\r\n      \"visualConfig\": {\r\n        \"type\": \"SINGLE_VALUE\",\r\n        \"global\": {\r\n          \"theme\": \"DEFAULT\",\r\n          \"threshold\": {\r\n            \"axisTarget\": \"LEFT\",\r\n            \"columnId\": \"office365.user.count.gauge:fold:filter(and(eq(product,exchange))):splitBy():max:auto:sort(value(avg,descending)):limit(100)\",\r\n            \"rules\": [\r\n              {\r\n                \"color\": \"#7dc540\"\r\n              },\r\n              {\r\n                \"color\": \"#f5d30f\"\r\n              },\r\n              {\r\n                \"color\": \"#dc172a\"\r\n              }\r\n            ]\r\n          },\r\n          \"seriesType\": \"LINE\",\r\n          \"hasTrendline\": true\r\n        },\r\n        \"rules\": [\r\n          {\r\n            \"matcher\": \"A:\",\r\n            \"properties\": {\r\n              \"seriesType\": \"LINE\"\r\n            }\r\n          }\r\n        ]\r\n      }\r\n    },\r\n    {\r\n      \"name\": \"Teams\",\r\n      \"tileType\": \"DATA_EXPLORER\",\r\n      \"configured\": true,\r\n      \"bounds\": {\r\n        \"top\": 38,\r\n        \"left\": 456,\r\n        \"width\": 152,\r\n        \"height\": 76\r\n      },\r\n      \"tileFilter\": {},\r\n      \"customName\": \"Data explorer results\",\r\n      \"queries\": [\r\n        {\r\n          \"id\": \"A\",\r\n          \"metric\": \"office365.user.count.gauge\",\r\n          \"spaceAggregation\": \"MAX\",\r\n          \"timeAggregation\": \"DEFAULT\",\r\n          \"splitBy\": [],\r\n          \"filterBy\": {\r\n            \"filterOperator\": \"AND\",\r\n            \"nestedFilters\": [\r\n              {\r\n                \"filter\": \"product\",\r\n                \"filterType\": \"DIMENSION\",\r\n                \"filterOperator\": \"OR\",\r\n                \"nestedFilters\": [],\r\n                \"criteria\": [\r\n                  {\r\n                    \"value\": \"teams\",\r\n                    \"evaluator\": \"EQ\"\r\n                  }\r\n                ]\r\n              }\r\n            ],\r\n            \"criteria\": []\r\n          },\r\n          \"enabled\": true\r\n        }\r\n      ],\r\n      \"visualConfig\": {\r\n        \"type\": \"SINGLE_VALUE\",\r\n        \"global\": {\r\n          \"theme\": \"DEFAULT\",\r\n          \"threshold\": {\r\n            \"axisTarget\": \"LEFT\",\r\n            \"columnId\": \"office365.user.count.gauge:fold:filter(and(eq(product,exchange))):splitBy():max:auto:sort(value(avg,descending)):limit(100)\",\r\n            \"rules\": [\r\n              {\r\n                \"color\": \"#7dc540\"\r\n              },\r\n              {\r\n                \"color\": \"#f5d30f\"\r\n              },\r\n              {\r\n                \"color\": \"#dc172a\"\r\n              }\r\n            ]\r\n          },\r\n          \"seriesType\": \"LINE\",\r\n          \"hasTrendline\": true\r\n        },\r\n        \"rules\": [\r\n          {\r\n            \"matcher\": \"A:\",\r\n            \"properties\": {\r\n              \"seriesType\": \"LINE\"\r\n            }\r\n          }\r\n        ]\r\n      }\r\n    },\r\n    {\r\n      \"name\": \"Sharepoint\",\r\n      \"tileType\": \"DATA_EXPLORER\",\r\n      \"configured\": true,\r\n      \"bounds\": {\r\n        \"top\": 114,\r\n        \"left\": 456,\r\n        \"width\": 152,\r\n        \"height\": 76\r\n      },\r\n      \"tileFilter\": {},\r\n      \"customName\": \"Data explorer results\",\r\n      \"queries\": [\r\n        {\r\n          \"id\": \"A\",\r\n          \"metric\": \"office365.user.count.gauge\",\r\n          \"spaceAggregation\": \"MAX\",\r\n          \"timeAggregation\": \"DEFAULT\",\r\n          \"splitBy\": [],\r\n          \"filterBy\": {\r\n            \"filterOperator\": \"AND\",\r\n            \"nestedFilters\": [\r\n              {\r\n                \"filter\": \"product\",\r\n                \"filterType\": \"DIMENSION\",\r\n                \"filterOperator\": \"OR\",\r\n                \"nestedFilters\": [],\r\n                \"criteria\": [\r\n                  {\r\n                    \"value\": \"sharepoint\",\r\n                    \"evaluator\": \"EQ\"\r\n                  }\r\n                ]\r\n              }\r\n            ],\r\n            \"criteria\": []\r\n          },\r\n          \"enabled\": true\r\n        }\r\n      ],\r\n      \"visualConfig\": {\r\n        \"type\": \"SINGLE_VALUE\",\r\n        \"global\": {\r\n          \"theme\": \"DEFAULT\",\r\n          \"threshold\": {\r\n            \"axisTarget\": \"LEFT\",\r\n            \"columnId\": \"office365.user.count.gauge:fold:filter(and(eq(product,exchange))):splitBy():max:auto:sort(value(avg,descending)):limit(100)\",\r\n            \"rules\": [\r\n              {\r\n                \"color\": \"#7dc540\"\r\n              },\r\n              {\r\n                \"color\": \"#f5d30f\"\r\n              },\r\n              {\r\n                \"color\": \"#dc172a\"\r\n              }\r\n            ]\r\n          },\r\n          \"seriesType\": \"LINE\",\r\n          \"hasTrendline\": true\r\n        },\r\n        \"rules\": [\r\n          {\r\n            \"matcher\": \"A:\",\r\n            \"properties\": {\r\n              \"seriesType\": \"LINE\"\r\n            }\r\n          }\r\n        ]\r\n      }\r\n    },\r\n    {\r\n      \"name\": \"Yammer\",\r\n      \"tileType\": \"DATA_EXPLORER\",\r\n      \"configured\": true,\r\n      \"bounds\": {\r\n        \"top\": 114,\r\n        \"left\": 304,\r\n        \"width\": 152,\r\n        \"height\": 76\r\n      },\r\n      \"tileFilter\": {},\r\n      \"customName\": \"Data explorer results\",\r\n      \"queries\": [\r\n        {\r\n          \"id\": \"A\",\r\n          \"metric\": \"office365.user.count.gauge\",\r\n          \"spaceAggregation\": \"MAX\",\r\n          \"timeAggregation\": \"DEFAULT\",\r\n          \"splitBy\": [],\r\n          \"filterBy\": {\r\n            \"filterOperator\": \"AND\",\r\n            \"nestedFilters\": [\r\n              {\r\n                \"filter\": \"product\",\r\n                \"filterType\": \"DIMENSION\",\r\n                \"filterOperator\": \"OR\",\r\n                \"nestedFilters\": [],\r\n                \"criteria\": [\r\n                  {\r\n                    \"value\": \"yammer\",\r\n                    \"evaluator\": \"EQ\"\r\n                  }\r\n                ]\r\n              }\r\n            ],\r\n            \"criteria\": []\r\n          },\r\n          \"enabled\": true\r\n        }\r\n      ],\r\n      \"visualConfig\": {\r\n        \"type\": \"SINGLE_VALUE\",\r\n        \"global\": {\r\n          \"theme\": \"DEFAULT\",\r\n          \"threshold\": {\r\n            \"axisTarget\": \"LEFT\",\r\n            \"columnId\": \"office365.user.count.gauge:fold:filter(and(eq(product,exchange))):splitBy():max:auto:sort(value(avg,descending)):limit(100)\",\r\n            \"rules\": [\r\n              {\r\n                \"color\": \"#7dc540\"\r\n              },\r\n              {\r\n                \"color\": \"#f5d30f\"\r\n              },\r\n              {\r\n                \"color\": \"#dc172a\"\r\n              }\r\n            ]\r\n          },\r\n          \"seriesType\": \"LINE\",\r\n          \"hasTrendline\": true\r\n        },\r\n        \"rules\": [\r\n          {\r\n            \"matcher\": \"A:\",\r\n            \"properties\": {\r\n              \"seriesType\": \"LINE\"\r\n            }\r\n          }\r\n        ]\r\n      }\r\n    },\r\n    {\r\n      \"name\": \"Office 365\",\r\n      \"tileType\": \"DATA_EXPLORER\",\r\n      \"configured\": true,\r\n      \"bounds\": {\r\n        \"top\": 38,\r\n        \"left\": 0,\r\n        \"width\": 152,\r\n        \"height\": 152\r\n      },\r\n      \"tileFilter\": {},\r\n      \"customName\": \"Data explorer results\",\r\n      \"queries\": [\r\n        {\r\n          \"id\": \"A\",\r\n          \"metric\": \"office365.user.count.gauge\",\r\n          \"spaceAggregation\": \"MAX\",\r\n          \"timeAggregation\": \"DEFAULT\",\r\n          \"splitBy\": [],\r\n          \"filterBy\": {\r\n            \"filterOperator\": \"AND\",\r\n            \"nestedFilters\": [\r\n              {\r\n                \"filter\": \"product\",\r\n                \"filterType\": \"DIMENSION\",\r\n                \"filterOperator\": \"OR\",\r\n                \"nestedFilters\": [],\r\n                \"criteria\": [\r\n                  {\r\n                    \"value\": \"office365\",\r\n                    \"evaluator\": \"EQ\"\r\n                  }\r\n                ]\r\n              }\r\n            ],\r\n            \"criteria\": []\r\n          },\r\n          \"enabled\": true\r\n        }\r\n      ],\r\n      \"visualConfig\": {\r\n        \"type\": \"SINGLE_VALUE\",\r\n        \"global\": {\r\n          \"theme\": \"DEFAULT\",\r\n          \"threshold\": {\r\n            \"axisTarget\": \"LEFT\",\r\n            \"columnId\": \"office365.user.count.gauge:fold:filter(and(eq(product,exchange))):splitBy():max:auto:sort(value(avg,descending)):limit(100)\",\r\n            \"rules\": [\r\n              {\r\n                \"color\": \"#7dc540\"\r\n              },\r\n              {\r\n                \"color\": \"#f5d30f\"\r\n              },\r\n              {\r\n                \"color\": \"#dc172a\"\r\n              }\r\n            ]\r\n          },\r\n          \"seriesType\": \"LINE\",\r\n          \"hasTrendline\": true\r\n        },\r\n        \"rules\": [\r\n          {\r\n            \"matcher\": \"A:\",\r\n            \"properties\": {\r\n              \"seriesType\": \"LINE\"\r\n            }\r\n          }\r\n        ]\r\n      }\r\n    },\r\n    {\r\n      \"name\": \"Active Users\",\r\n      \"tileType\": \"DATA_EXPLORER\",\r\n      \"configured\": true,\r\n      \"bounds\": {\r\n        \"top\": 190,\r\n        \"left\": 0,\r\n        \"width\": 608,\r\n        \"height\": 228\r\n      },\r\n      \"tileFilter\": {},\r\n      \"customName\": \"Data explorer results\",\r\n      \"queries\": [\r\n        {\r\n          \"id\": \"A\",\r\n          \"metric\": \"office365.user.count.gauge\",\r\n          \"spaceAggregation\": \"MAX\",\r\n          \"timeAggregation\": \"DEFAULT\",\r\n          \"splitBy\": [\r\n            \"product\"\r\n          ],\r\n          \"metricSelector\": \"\",\r\n          \"enabled\": true\r\n        }\r\n      ],\r\n      \"visualConfig\": {\r\n        \"type\": \"TOP_LIST\",\r\n        \"global\": {\r\n          \"theme\": \"DEFAULT\",\r\n          \"threshold\": {\r\n            \"axisTarget\": \"LEFT\",\r\n            \"columnId\": \"office365.user.count.gauge:fold:splitBy(product):max:auto:sort(value(avg,descending)):limit(100)\",\r\n            \"rules\": [\r\n              {\r\n                \"color\": \"#7dc540\"\r\n              },\r\n              {\r\n                \"color\": \"#f5d30f\"\r\n              },\r\n              {\r\n                \"color\": \"#dc172a\"\r\n              }\r\n            ]\r\n          },\r\n          \"seriesType\": \"LINE\"\r\n        },\r\n        \"rules\": [\r\n          {\r\n            \"matcher\": \"A:\",\r\n            \"properties\": {\r\n              \"seriesType\": \"LINE\"\r\n            }\r\n          }\r\n        ]\r\n      }\r\n    },\r\n    {\r\n      \"name\": \"Europe\",\r\n      \"tileType\": \"DATA_EXPLORER\",\r\n      \"configured\": true,\r\n      \"bounds\": {\r\n        \"top\": 114,\r\n        \"left\": 608,\r\n        \"width\": 266,\r\n        \"height\": 76\r\n      },\r\n      \"tileFilter\": {},\r\n      \"customName\": \"Data explorer results\",\r\n      \"queries\": [\r\n        {\r\n          \"id\": \"A\",\r\n          \"metric\": \"builtin:synthetic.http.request.dns.geo\",\r\n          \"spaceAggregation\": \"AVG\",\r\n          \"timeAggregation\": \"DEFAULT\",\r\n          \"splitBy\": [\r\n            \"dt.entity.synthetic_location\"\r\n          ],\r\n          \"filterBy\": {\r\n            \"filterOperator\": \"AND\",\r\n            \"nestedFilters\": [\r\n              {\r\n                \"filter\": \"dt.entity.synthetic_location\",\r\n                \"filterType\": \"NAME\",\r\n                \"filterOperator\": \"OR\",\r\n                \"nestedFilters\": [],\r\n                \"criteria\": [\r\n                  {\r\n                    \"value\": \"Dublin\",\r\n                    \"evaluator\": \"IN\"\r\n                  }\r\n                ]\r\n              },\r\n              {\r\n                \"filter\": \"dt.entity.http_check_step\",\r\n                \"filterType\": \"NAME\",\r\n                \"filterOperator\": \"OR\",\r\n                \"nestedFilters\": [],\r\n                \"criteria\": [\r\n                  {\r\n                    \"value\": \"portal.office.com\",\r\n                    \"evaluator\": \"IN\"\r\n                  }\r\n                ]\r\n              }\r\n            ],\r\n            \"criteria\": []\r\n          },\r\n          \"foldTransformation\": \"LAST_VALUE\",\r\n          \"enabled\": true\r\n        }\r\n      ],\r\n      \"visualConfig\": {\r\n        \"type\": \"SINGLE_VALUE\",\r\n        \"global\": {\r\n          \"theme\": \"DEFAULT\",\r\n          \"threshold\": {\r\n            \"axisTarget\": \"LEFT\",\r\n            \"columnId\": \"HTTP request - DNS lookup time (by location)\",\r\n            \"rules\": [\r\n              {\r\n                \"color\": \"#7dc540\"\r\n              },\r\n              {\r\n                \"color\": \"#f5d30f\"\r\n              },\r\n              {\r\n                \"color\": \"#dc172a\"\r\n              }\r\n            ]\r\n          },\r\n          \"seriesType\": \"LINE\",\r\n          \"hasTrendline\": true\r\n        },\r\n        \"rules\": [\r\n          {\r\n            \"matcher\": \"A:\",\r\n            \"properties\": {\r\n              \"seriesType\": \"LINE\"\r\n            }\r\n          }\r\n        ]\r\n      }\r\n    },\r\n    {\r\n      \"name\": \"North America\",\r\n      \"tileType\": \"DATA_EXPLORER\",\r\n      \"configured\": true,\r\n      \"bounds\": {\r\n        \"top\": 190,\r\n        \"left\": 608,\r\n        \"width\": 266,\r\n        \"height\": 76\r\n      },\r\n      \"tileFilter\": {},\r\n      \"customName\": \"Data explorer results\",\r\n      \"queries\": [\r\n        {\r\n          \"id\": \"A\",\r\n          \"metric\": \"builtin:synthetic.http.request.dns.geo\",\r\n          \"spaceAggregation\": \"AVG\",\r\n          \"timeAggregation\": \"DEFAULT\",\r\n          \"splitBy\": [\r\n            \"dt.entity.synthetic_location\"\r\n          ],\r\n          \"filterBy\": {\r\n            \"filterOperator\": \"AND\",\r\n            \"nestedFilters\": [\r\n              {\r\n                \"filter\": \"dt.entity.http_check_step\",\r\n                \"filterType\": \"NAME\",\r\n                \"filterOperator\": \"OR\",\r\n                \"nestedFilters\": [],\r\n                \"criteria\": [\r\n                  {\r\n                    \"value\": \"portal.office.com\",\r\n                    \"evaluator\": \"IN\"\r\n                  }\r\n                ]\r\n              },\r\n              {\r\n                \"filter\": \"dt.entity.synthetic_location\",\r\n                \"filterType\": \"NAME\",\r\n                \"filterOperator\": \"OR\",\r\n                \"nestedFilters\": [],\r\n                \"criteria\": [\r\n                  {\r\n                    \"value\": \"N. Virginia\",\r\n                    \"evaluator\": \"IN\"\r\n                  }\r\n                ]\r\n              }\r\n            ],\r\n            \"criteria\": []\r\n          },\r\n          \"foldTransformation\": \"LAST_VALUE\",\r\n          \"enabled\": true\r\n        }\r\n      ],\r\n      \"visualConfig\": {\r\n        \"type\": \"SINGLE_VALUE\",\r\n        \"global\": {\r\n          \"theme\": \"DEFAULT\",\r\n          \"threshold\": {\r\n            \"axisTarget\": \"LEFT\",\r\n            \"columnId\": \"HTTP request - DNS lookup time (by location)\",\r\n            \"rules\": [\r\n              {\r\n                \"color\": \"#7dc540\"\r\n              },\r\n              {\r\n                \"color\": \"#f5d30f\"\r\n              },\r\n              {\r\n                \"color\": \"#dc172a\"\r\n              }\r\n            ]\r\n          },\r\n          \"seriesType\": \"LINE\",\r\n          \"hasTrendline\": true\r\n        },\r\n        \"rules\": [\r\n          {\r\n            \"matcher\": \"A:\",\r\n            \"properties\": {\r\n              \"seriesType\": \"LINE\"\r\n            }\r\n          }\r\n        ]\r\n      }\r\n    },\r\n    {\r\n      \"name\": \"South America\",\r\n      \"tileType\": \"DATA_EXPLORER\",\r\n      \"configured\": true,\r\n      \"bounds\": {\r\n        \"top\": 266,\r\n        \"left\": 608,\r\n        \"width\": 266,\r\n        \"height\": 76\r\n      },\r\n      \"tileFilter\": {},\r\n      \"customName\": \"Data explorer results\",\r\n      \"queries\": [\r\n        {\r\n          \"id\": \"A\",\r\n          \"metric\": \"builtin:synthetic.http.request.dns.geo\",\r\n          \"spaceAggregation\": \"AVG\",\r\n          \"timeAggregation\": \"DEFAULT\",\r\n          \"splitBy\": [\r\n            \"dt.entity.synthetic_location\"\r\n          ],\r\n          \"filterBy\": {\r\n            \"filterOperator\": \"AND\",\r\n            \"nestedFilters\": [\r\n              {\r\n                \"filter\": \"dt.entity.synthetic_location\",\r\n                \"filterType\": \"NAME\",\r\n                \"filterOperator\": \"OR\",\r\n                \"nestedFilters\": [],\r\n                \"criteria\": [\r\n                  {\r\n                    \"value\": \"São Paulo\",\r\n                    \"evaluator\": \"IN\"\r\n                  }\r\n                ]\r\n              },\r\n              {\r\n                \"filter\": \"dt.entity.http_check_step\",\r\n                \"filterType\": \"NAME\",\r\n                \"filterOperator\": \"OR\",\r\n                \"nestedFilters\": [],\r\n                \"criteria\": [\r\n                  {\r\n                    \"value\": \"portal.office.com\",\r\n                    \"evaluator\": \"IN\"\r\n                  }\r\n                ]\r\n              }\r\n            ],\r\n            \"criteria\": []\r\n          },\r\n          \"foldTransformation\": \"LAST_VALUE\",\r\n          \"enabled\": true\r\n        }\r\n      ],\r\n      \"visualConfig\": {\r\n        \"type\": \"SINGLE_VALUE\",\r\n        \"global\": {\r\n          \"theme\": \"DEFAULT\",\r\n          \"threshold\": {\r\n            \"axisTarget\": \"LEFT\",\r\n            \"columnId\": \"HTTP request - DNS lookup time (by location)\",\r\n            \"rules\": [\r\n              {\r\n                \"color\": \"#7dc540\"\r\n              },\r\n              {\r\n                \"color\": \"#f5d30f\"\r\n              },\r\n              {\r\n                \"color\": \"#dc172a\"\r\n              }\r\n            ]\r\n          },\r\n          \"seriesType\": \"LINE\",\r\n          \"hasTrendline\": true\r\n        },\r\n        \"rules\": [\r\n          {\r\n            \"matcher\": \"A:\",\r\n            \"properties\": {\r\n              \"seriesType\": \"LINE\"\r\n            }\r\n          }\r\n        ]\r\n      }\r\n    },\r\n    {\r\n      \"name\": \"Pacific\",\r\n      \"tileType\": \"DATA_EXPLORER\",\r\n      \"configured\": true,\r\n      \"bounds\": {\r\n        \"top\": 342,\r\n        \"left\": 608,\r\n        \"width\": 266,\r\n        \"height\": 76\r\n      },\r\n      \"tileFilter\": {},\r\n      \"customName\": \"Data explorer results\",\r\n      \"queries\": [\r\n        {\r\n          \"id\": \"A\",\r\n          \"metric\": \"builtin:synthetic.http.request.dns.geo\",\r\n          \"spaceAggregation\": \"AVG\",\r\n          \"timeAggregation\": \"DEFAULT\",\r\n          \"splitBy\": [\r\n            \"dt.entity.synthetic_location\"\r\n          ],\r\n          \"filterBy\": {\r\n            \"filterOperator\": \"AND\",\r\n            \"nestedFilters\": [\r\n              {\r\n                \"filter\": \"dt.entity.http_check_step\",\r\n                \"filterType\": \"NAME\",\r\n                \"filterOperator\": \"OR\",\r\n                \"nestedFilters\": [],\r\n                \"criteria\": [\r\n                  {\r\n                    \"value\": \"portal.office.com\",\r\n                    \"evaluator\": \"IN\"\r\n                  }\r\n                ]\r\n              },\r\n              {\r\n                \"filter\": \"dt.entity.synthetic_location\",\r\n                \"filterType\": \"NAME\",\r\n                \"filterOperator\": \"OR\",\r\n                \"nestedFilters\": [],\r\n                \"criteria\": [\r\n                  {\r\n                    \"value\": \"Sydney\",\r\n                    \"evaluator\": \"IN\"\r\n                  }\r\n                ]\r\n              }\r\n            ],\r\n            \"criteria\": []\r\n          },\r\n          \"foldTransformation\": \"LAST_VALUE\",\r\n          \"enabled\": true\r\n        }\r\n      ],\r\n      \"visualConfig\": {\r\n        \"type\": \"SINGLE_VALUE\",\r\n        \"global\": {\r\n          \"theme\": \"DEFAULT\",\r\n          \"threshold\": {\r\n            \"axisTarget\": \"LEFT\",\r\n            \"columnId\": \"HTTP request - DNS lookup time (by location)\",\r\n            \"rules\": [\r\n              {\r\n                \"color\": \"#7dc540\"\r\n              },\r\n              {\r\n                \"color\": \"#f5d30f\"\r\n              },\r\n              {\r\n                \"color\": \"#dc172a\"\r\n              }\r\n            ]\r\n          },\r\n          \"seriesType\": \"LINE\",\r\n          \"hasTrendline\": true\r\n        },\r\n        \"rules\": [\r\n          {\r\n            \"matcher\": \"A:\",\r\n            \"properties\": {\r\n              \"seriesType\": \"LINE\"\r\n            }\r\n          }\r\n        ]\r\n      }\r\n    },\r\n    {\r\n      \"name\": \"DNS Lookup Time\",\r\n      \"tileType\": \"HEADER\",\r\n      \"configured\": true,\r\n      \"bounds\": {\r\n        \"top\": 0,\r\n        \"left\": 608,\r\n        \"width\": 266,\r\n        \"height\": 38\r\n      },\r\n      \"tileFilter\": {}\r\n    },\r\n    {\r\n      \"name\": \"Asia\",\r\n      \"tileType\": \"DATA_EXPLORER\",\r\n      \"configured\": true,\r\n      \"bounds\": {\r\n        \"top\": 38,\r\n        \"left\": 608,\r\n        \"width\": 266,\r\n        \"height\": 76\r\n      },\r\n      \"tileFilter\": {},\r\n      \"customName\": \"Data explorer results\",\r\n      \"queries\": [\r\n        {\r\n          \"id\": \"A\",\r\n          \"metric\": \"builtin:synthetic.http.request.dns.geo\",\r\n          \"spaceAggregation\": \"AVG\",\r\n          \"timeAggregation\": \"DEFAULT\",\r\n          \"splitBy\": [\r\n            \"dt.entity.synthetic_location\"\r\n          ],\r\n          \"filterBy\": {\r\n            \"filterOperator\": \"AND\",\r\n            \"nestedFilters\": [\r\n              {\r\n                \"filter\": \"dt.entity.http_check_step\",\r\n                \"filterType\": \"NAME\",\r\n                \"filterOperator\": \"OR\",\r\n                \"nestedFilters\": [],\r\n                \"criteria\": [\r\n                  {\r\n                    \"value\": \"portal.office.com\",\r\n                    \"evaluator\": \"IN\"\r\n                  }\r\n                ]\r\n              },\r\n              {\r\n                \"filter\": \"dt.entity.synthetic_location\",\r\n                \"filterType\": \"NAME\",\r\n                \"filterOperator\": \"OR\",\r\n                \"nestedFilters\": [],\r\n                \"criteria\": [\r\n                  {\r\n                    \"value\": \"Tokyo\",\r\n                    \"evaluator\": \"IN\"\r\n                  }\r\n                ]\r\n              }\r\n            ],\r\n            \"criteria\": []\r\n          },\r\n          \"foldTransformation\": \"LAST_VALUE\",\r\n          \"enabled\": true\r\n        }\r\n      ],\r\n      \"visualConfig\": {\r\n        \"type\": \"SINGLE_VALUE\",\r\n        \"global\": {\r\n          \"theme\": \"DEFAULT\",\r\n          \"threshold\": {\r\n            \"axisTarget\": \"LEFT\",\r\n            \"columnId\": \"HTTP request - DNS lookup time (by location)\",\r\n            \"rules\": [\r\n              {\r\n                \"color\": \"#7dc540\"\r\n              },\r\n              {\r\n                \"color\": \"#f5d30f\"\r\n              },\r\n              {\r\n                \"color\": \"#dc172a\"\r\n              }\r\n            ]\r\n          },\r\n          \"seriesType\": \"LINE\",\r\n          \"hasTrendline\": true\r\n        },\r\n        \"rules\": [\r\n          {\r\n            \"matcher\": \"A:\",\r\n            \"properties\": {\r\n              \"seriesType\": \"LINE\"\r\n            }\r\n          }\r\n        ]\r\n      }\r\n    },\r\n    {\r\n      \"name\": \"Outlook Mailbox Quota Counts\",\r\n      \"tileType\": \"DATA_EXPLORER\",\r\n      \"configured\": true,\r\n      \"bounds\": {\r\n        \"top\": 418,\r\n        \"left\": 342,\r\n        \"width\": 532,\r\n        \"height\": 266\r\n      },\r\n      \"tileFilter\": {},\r\n      \"customName\": \"Data explorer results\",\r\n      \"queries\": [\r\n        {\r\n          \"id\": \"A\",\r\n          \"metric\": \"office365.mailbox.quota.count.gauge\",\r\n          \"spaceAggregation\": \"AVG\",\r\n          \"timeAggregation\": \"DEFAULT\",\r\n          \"splitBy\": [\r\n            \"category\"\r\n          ],\r\n          \"foldTransformation\": \"LAST_VALUE\",\r\n          \"enabled\": true\r\n        }\r\n      ],\r\n      \"visualConfig\": {\r\n        \"type\": \"TOP_LIST\",\r\n        \"global\": {\r\n          \"theme\": \"DEFAULT\",\r\n          \"threshold\": {\r\n            \"axisTarget\": \"LEFT\",\r\n            \"columnId\": \"office365.mailbox.quota.count.gauge:fold:splitBy(category):avg:auto:sort(value(avg,descending)):limit(100)\",\r\n            \"rules\": [\r\n              {\r\n                \"color\": \"#7dc540\"\r\n              },\r\n              {\r\n                \"color\": \"#f5d30f\"\r\n              },\r\n              {\r\n                \"color\": \"#dc172a\"\r\n              }\r\n            ]\r\n          },\r\n          \"seriesType\": \"LINE\"\r\n        },\r\n        \"rules\": [\r\n          {\r\n            \"matcher\": \"A:\",\r\n            \"properties\": {\r\n              \"seriesType\": \"LINE\"\r\n            }\r\n          }\r\n        ]\r\n      }\r\n    },\r\n    {\r\n      \"name\": \"Storage Used (GB)\",\r\n      \"tileType\": \"DATA_EXPLORER\",\r\n      \"configured\": true,\r\n      \"bounds\": {\r\n        \"top\": 418,\r\n        \"left\": 0,\r\n        \"width\": 342,\r\n        \"height\": 266\r\n      },\r\n      \"tileFilter\": {},\r\n      \"customName\": \"Data explorer results\",\r\n      \"queries\": [\r\n        {\r\n          \"id\": \"A\",\r\n          \"metric\": \"office365.storage.used.bytes\",\r\n          \"spaceAggregation\": \"AVG\",\r\n          \"timeAggregation\": \"DEFAULT\",\r\n          \"splitBy\": [\r\n            \"site\"\r\n          ],\r\n          \"foldTransformation\": \"LAST_VALUE\",\r\n          \"enabled\": true\r\n        }\r\n      ],\r\n      \"visualConfig\": {\r\n        \"type\": \"PIE_CHART\",\r\n        \"global\": {\r\n          \"theme\": \"DEFAULT\",\r\n          \"threshold\": {\r\n            \"axisTarget\": \"LEFT\",\r\n            \"columnId\": \"office365.mailbox.storage.used:fold:splitBy():avg:auto:sort(value(avg,descending)):limit(100)\",\r\n            \"rules\": [\r\n              {\r\n                \"color\": \"#7dc540\"\r\n              },\r\n              {\r\n                \"color\": \"#f5d30f\"\r\n              },\r\n              {\r\n                \"color\": \"#dc172a\"\r\n              }\r\n            ]\r\n          },\r\n          \"seriesType\": \"LINE\"\r\n        },\r\n        \"rules\": [\r\n          {\r\n            \"matcher\": \"A:\",\r\n            \"properties\": {\r\n              \"seriesType\": \"LINE\"\r\n            }\r\n          }\r\n        ]\r\n      }\r\n    },\r\n    {\r\n      \"name\": \"Healthy\",\r\n      \"tileType\": \"DATA_EXPLORER\",\r\n      \"configured\": true,\r\n      \"bounds\": {\r\n        \"top\": 38,\r\n        \"left\": 874,\r\n        \"width\": 304,\r\n        \"height\": 646\r\n      },\r\n      \"tileFilter\": {\r\n        \"timeframe\": \"-5m\"\r\n      },\r\n      \"customName\": \"Data explorer results\",\r\n      \"queries\": [\r\n        {\r\n          \"id\": \"A\",\r\n          \"metric\": \"office365.service.status\",\r\n          \"spaceAggregation\": \"AVG\",\r\n          \"timeAggregation\": \"DEFAULT\",\r\n          \"splitBy\": [\r\n            \"workload\",\r\n            \"status\"\r\n          ],\r\n          \"filterBy\": {\r\n            \"filterOperator\": \"AND\",\r\n            \"nestedFilters\": [\r\n              {\r\n                \"filter\": \"healthy\",\r\n                \"filterType\": \"DIMENSION\",\r\n                \"filterOperator\": \"OR\",\r\n                \"nestedFilters\": [],\r\n                \"criteria\": [\r\n                  {\r\n                    \"value\": \"true\",\r\n                    \"evaluator\": \"EQ\"\r\n                  }\r\n                ]\r\n              }\r\n            ],\r\n            \"criteria\": []\r\n          },\r\n          \"foldTransformation\": \"LAST_VALUE\",\r\n          \"enabled\": true\r\n        }\r\n      ],\r\n      \"visualConfig\": {\r\n        \"type\": \"TOP_LIST\",\r\n        \"global\": {\r\n          \"theme\": \"DEFAULT\",\r\n          \"threshold\": {\r\n            \"axisTarget\": \"LEFT\",\r\n            \"rules\": [\r\n              {\r\n                \"value\": 0,\r\n                \"color\": \"#7dc540\"\r\n              },\r\n              {\r\n                \"color\": \"#f5d30f\"\r\n              },\r\n              {\r\n                \"color\": \"#dc172a\"\r\n              }\r\n            ]\r\n          },\r\n          \"seriesType\": \"LINE\"\r\n        },\r\n        \"rules\": [\r\n          {\r\n            \"matcher\": \"A:\",\r\n            \"properties\": {\r\n              \"seriesType\": \"LINE\"\r\n            }\r\n          }\r\n        ]\r\n      }\r\n    },\r\n    {\r\n      \"name\": \"Unhealthy\",\r\n      \"tileType\": \"DATA_EXPLORER\",\r\n      \"configured\": true,\r\n      \"bounds\": {\r\n        \"top\": 38,\r\n        \"left\": 1178,\r\n        \"width\": 304,\r\n        \"height\": 646\r\n      },\r\n      \"tileFilter\": {\r\n        \"timeframe\": \"-5m\"\r\n      },\r\n      \"customName\": \"Data explorer results\",\r\n      \"queries\": [\r\n        {\r\n          \"id\": \"A\",\r\n          \"metric\": \"office365.service.status\",\r\n          \"spaceAggregation\": \"AVG\",\r\n          \"timeAggregation\": \"DEFAULT\",\r\n          \"splitBy\": [\r\n            \"workload\",\r\n            \"status\"\r\n          ],\r\n          \"filterBy\": {\r\n            \"filterOperator\": \"AND\",\r\n            \"nestedFilters\": [\r\n              {\r\n                \"filter\": \"healthy\",\r\n                \"filterType\": \"DIMENSION\",\r\n                \"filterOperator\": \"OR\",\r\n                \"nestedFilters\": [],\r\n                \"criteria\": [\r\n                  {\r\n                    \"value\": \"false\",\r\n                    \"evaluator\": \"EQ\"\r\n                  }\r\n                ]\r\n              }\r\n            ],\r\n            \"criteria\": []\r\n          },\r\n          \"metricSelector\": \"office365.service.status:fold:filter(and(eq(healthy,false))):splitBy(workload,status):avg:auto:sort(value(avg,descending)):limit(10)\",\r\n          \"enabled\": true\r\n        }\r\n      ],\r\n      \"visualConfig\": {\r\n        \"type\": \"TOP_LIST\",\r\n        \"global\": {\r\n          \"theme\": \"DEFAULT\",\r\n          \"threshold\": {\r\n            \"axisTarget\": \"LEFT\",\r\n            \"rules\": [\r\n              {\r\n                \"color\": \"#7dc540\"\r\n              },\r\n              {\r\n                \"color\": \"#f5d30f\"\r\n              },\r\n              {\r\n                \"value\": 0,\r\n                \"color\": \"#dc172a\"\r\n              }\r\n            ]\r\n          },\r\n          \"seriesType\": \"LINE\"\r\n        },\r\n        \"rules\": [\r\n          {\r\n            \"matcher\": \"A:\",\r\n            \"properties\": {\r\n              \"seriesType\": \"LINE\"\r\n            }\r\n          }\r\n        ]\r\n      }\r\n    },\r\n    {\r\n      \"name\": \"Office365 Service Status\",\r\n      \"tileType\": \"HEADER\",\r\n      \"configured\": true,\r\n      \"bounds\": {\r\n        \"top\": 0,\r\n        \"left\": 874,\r\n        \"width\": 646,\r\n        \"height\": 38\r\n      },\r\n      \"tileFilter\": {}\r\n    }\r\n  ]\r\n}"
+						},
+						"url": {
+							"raw": "{{ENVIRONMENT_URL}}/api/config/v1/dashboards",
+							"host": [
+								"{{ENVIRONMENT_URL}}"
+							],
+							"path": [
+								"api",
+								"config",
+								"v1",
+								"dashboards"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "[Dashboard]-[Office365]-[SHARE]",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"setTimeout(function(){}, pm.variables.get(\"REQUEST_DELAY\"));\r",
+									"\r",
+									"pm.test(\"204 UPDATED\", () => {\r",
+									"    pm.response.to.have.status(204);\r",
+									"});\r",
+									"\r",
+									"if(pm.response.code != 204) {\r",
+									"    postman.setNextRequest(null);\r",
+									"    return;\r",
+									"}\r",
+									"postman.setNextRequest(\"[CLEANUP]-[API Token]-[Monitor Creation]-[DELETE]\");"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json; charset=utf-8",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Api-Token {{API_TOKEN_MONITOR_SCHEDULING}}",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json; charset=utf-8",
+								"type": "text"
+							},
+							{
+								"key": "User-Agent",
+								"value": "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.186 Safari/537.36",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"id\": \"{{ID_DASHBOARD}}\",\r\n  \"enabled\": true,\r\n  \"published\": true,\r\n  \"permissions\": [\r\n    {\r\n      \"type\": \"ALL\",\r\n      \"permission\": \"VIEW\"\r\n    }\r\n  ],\r\n  \"publicAccess\": {\r\n    \"managementZoneIds\": [],\r\n    \"urls\": {}\r\n  }\r\n}"
+						},
+						"url": {
+							"raw": "{{ENVIRONMENT_URL}}/api/config/v1/dashboards/{{ID_DASHBOARD}}/shareSettings",
+							"host": [
+								"{{ENVIRONMENT_URL}}"
+							],
+							"path": [
+								"api",
+								"config",
+								"v1",
+								"dashboards",
+								"{{ID_DASHBOARD}}",
+								"shareSettings"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "[CLEANUP]",
+			"item": [
+				{
+					"name": "[CLEANUP]-[API Token]-[Monitor Creation]-[DELETE]",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"setTimeout(function(){}, pm.variables.get(\"REQUEST_DELAY\"));\r",
+									"\r",
+									"pm.test(\"204 DELETED\", () => {\r",
+									"    pm.response.to.have.status(204);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json; charset=utf-8",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Api-Token {{API_TOKEN}}",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json; charset=utf-8",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{ENVIRONMENT_URL}}/api/v1/tokens/{{ID_API_TOKEN_MONITOR_SCHEDULING}}",
+							"host": [
+								"{{ENVIRONMENT_URL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"tokens",
+								"{{ID_API_TOKEN_MONITOR_SCHEDULING}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "NAME_API_TOKEN_CREDENTIAL_VAULT_ACCESS",
+			"value": "[Office365] CredentialVaultAccess"
+		},
+		{
+			"key": "NAME_API_TOKEN_METRICS_INGEST",
+			"value": "[Office365] Metrics Ingest"
+		},
+		{
+			"key": "NAME_API_TOKEN_MONITOR_CREATION",
+			"value": "[Office365] Monitor Scheduling"
+		},
+		{
+			"key": "NAME_CREDENTIALS_METRICS_INGEST_TOKEN",
+			"value": "[Office365] API Token (Metrics Ingest)"
+		},
+		{
+			"key": "NAME_CREDENTIALS_CREDENTIAL_VAULT_TOKEN",
+			"value": "[Office365] API Token (Access Credential Vault)"
+		},
+		{
+			"key": "NAME_CREDENTIALS_OFFICE365_ACCESS_TOKEN",
+			"value": "[Office365] Access Token"
+		},
+		{
+			"key": "NAME_CREDENTIALS_OFFICE365_CLIENT_SECRET",
+			"value": "[Office365] Client Secret"
+		},
+		{
+			"key": "NAME_MONITOR_TOKEN_REFRESH",
+			"value": "[Office365] Token Refresh"
+		},
+		{
+			"key": "REQUEST_DELAY",
+			"value": "100"
+		},
+		{
+			"key": "NAME_CREDENTIALS_OFFICE365_CLIENT_ID",
+			"value": "[Office365] ClientID"
+		},
+		{
+			"key": "NAME_CREDENTIALS_OFFICE365_TENANT",
+			"value": "[Office365] Tenant"
+		},
+		{
+			"key": "NAME_MONITOR_PORTAL_OFFICE_COM",
+			"value": "[Office365] portal.office.com"
+		},
+		{
+			"key": "NAME_MONITOR_REPORTS",
+			"value": "[Office365] Reports"
+		},
+		{
+			"key": "NAME_DASHBOARD",
+			"value": "Office365"
+		},
+		{
+			"key": "NAME_CREDENTIALS_OFFICE365_MANAGE_ACCESS_TOKEN",
+			"value": "[Office365] Manage Access Token"
+		}
+	]
+}
