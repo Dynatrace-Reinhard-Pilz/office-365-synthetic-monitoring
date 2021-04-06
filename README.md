@@ -51,4 +51,5 @@ You'll notice that your environment now contains 3 additional synthetic monitors
 * `[Office365] portal.office.com` periodically tests connectivity to the Office365 servers. Feel free to reduce the frequency to something lower than a minute. Just be aware that this also lowers the resolution of the metrics gathered for Dynatrace.
 * `[Office365] Reports` finally queries the Microsoft Graph API and the Office 365 Management API for various metrics. Feel free to reduce the frequency to something lower than a minute. Just be aware that this also lowers the resolution of the metrics gathered for Dynatrace. If you take a detailed look at this synthetic monitor you'll realize that the final request addresses the Metrics Ingest REST API of your Dynatrace Environment.
 
-
+### You have arrived!
+![Dashboard](https://github.com/Dynatrace-Reinhard-Pilz/office-365-synthetic-monitoring/raw/main/docs/dashboard.png)
